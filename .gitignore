@@ -1,0 +1,51 @@
+# Coverage
+coverage/
+
+# Miscellaneous
+*.local
+.DS_Store
+
+# Cypress
+/cypress/videos/
+/cypress/screenshots/
+
+# TypeScript build info
+*.tsbuildinfo
+
+# Backend - Java, Maven, and IDE
+# Build output
+target/
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# Maven wrapper
+!.mvn/wrapper/maven-wrapper.jar
+
+# STS (Spring Tool Suite) specific files
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+# IntelliJ IDEA files
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+/build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# vscode
+.vscode/
+src/main/resources/application-local.yaml
