@@ -1,5 +1,7 @@
 package komeiji.back.controller;
 
+import com.google.gson.Gson;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
@@ -11,10 +13,11 @@ import komeiji.back.utils.Result;
 import komeiji.back.websocket.message.Message;
 import komeiji.back.websocket.message.MessageFactory;
 import komeiji.back.websocket.message.MessageType;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -23,7 +26,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import komeiji.back.websocket.session.SessionToken;
-import org.springframework.web.bind.annotation.RestController;
 
 import static komeiji.back.websocket.utils.Utils.sendMessageInUserSession;
 
@@ -74,7 +76,11 @@ public class ConsultController {
         SessionToken consultant_sessiontoken = new SessionToken(consult_id);
 
         //NOTICE 根据SessionToken 利用MessageFactory.newTextMessage发送消息   向对应的咨询师发送请求连接的信息
-        Message toConsultant = MessageFactory.newTextMessage(MessageType.CHAT_REQUEST,patient_sessiontoken,consultant_sessiontoken,"请求连接from:"+Login_user);
+        ChatRequest chatRequest = new ChatRequest();
+        chatRequest.setMessage("\"请求连接from:\"+Login_user");
+        chatRequest.setPatientId(Login_user);
+        Gson gson = new Gson();
+        Message toConsultant = MessageFactory.newTextMessage(MessageType.CHAT_REQUEST,patient_sessiontoken,consultant_sessiontoken,gson.toJson(chatRequest));
         sendMessageInUserSession(toConsultant);
 
         //NOTICE 等待咨询师恢复
@@ -127,28 +133,48 @@ public class ConsultController {
         return Result.success("已处理");
     }
 
-    @GetMapping("/response_request")
-    public Result<String> responseRequest(@Param("patient_id") String patient_id,@Param("accept_reject") boolean accept_reject, HttpSession session, HttpServletResponse response) throws IOException, InterruptedException
+    @PostMapping("/response_request")
+    public Result<String> responseRequest(@RequestBody ChatResponse chatResponse, HttpSession session, HttpServletResponse response) throws IOException, InterruptedException
     {
 //        System.out.println("patient_id:"+patient_id);
 //        System.out.println("waiter.size():"+waiters.size());
 //        System.out.println("waiters:"+waiters);
 
-        Optional<CountDownLatch> latch = Optional.ofNullable(waiters.get(patient_id));
-        if(latch.isPresent() && requestStatus_map.get(patient_id).equals(ConsultRequestStatus.WAITING)){
+        Optional<CountDownLatch> latch = Optional.ofNullable(waiters.get(chatResponse.patientId));
+        if(latch.isPresent() && requestStatus_map.get(chatResponse.patientId).equals(ConsultRequestStatus.WAITING)){
             //TODO 根据accept_reject 进行不同业务处
-            if(accept_reject){
-                requestStatus_map.replace(patient_id,ConsultRequestStatus.ACCEPTED);
+            if(chatResponse.accept_reject){
+                requestStatus_map.replace(chatResponse.patientId,ConsultRequestStatus.ACCEPTED);
             }
             else{
-                requestStatus_map.replace(patient_id,ConsultRequestStatus.REJECTED);
+                requestStatus_map.replace(chatResponse.patientId,ConsultRequestStatus.REJECTED);
             }
             latch.get().countDown();
             return Result.success("请求已处理");
         }
         else{
-            return  Result.error("401","请求已过期");
+            return Result.error("401","请求已过期");
         }
+    }
+
+    @Setter
+    @Getter
+    @Schema(description = "咨询师回应的Request Body")
+    public static class ChatResponse {
+        @Schema(description = "咨询者Id", example = "1")
+        private String patientId;
+        @Schema(description = "同意与否", example = "True")
+        private boolean accept_reject;
+    }
+
+    @Setter
+    @Getter
+    @Schema(description = "咨询者发起请求的Request Body")
+    public static class ChatRequest {
+        @Schema(description = "咨询者Id", example = "1")
+        private String patientId;
+        @Schema(description = "附加信息", example = "Hello")
+        private String message;
     }
 }
 
