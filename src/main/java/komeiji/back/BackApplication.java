@@ -3,6 +3,7 @@ package komeiji.back;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.handler.logging.LogLevel;
 import io.netty.util.concurrent.GlobalEventExecutor;
+
 import komeiji.back.websocket.WebSocketServer;
 import komeiji.back.websocket.message.fowardqueue.impl.CLMessageQueue;
 import komeiji.back.websocket.session.SessionManager;
@@ -17,5 +18,7 @@ public class BackApplication {
                 new SessionManager(new DefaultChannelGroup(GlobalEventExecutor.INSTANCE)),
                 new CLMessageQueue());
         webSocketServer.startServer(54950);
+
+
     }
 }

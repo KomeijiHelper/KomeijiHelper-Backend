@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import komeiji.back.utils.Result;
 import jakarta.annotation.Resource;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,10 +27,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "用户基本功能", description = "用户基本功能接口")
 @RestController
-@RequestMapping(path ="/user",produces = "application/json")
+@RequestMapping(path ="/user")
 public class UserController {
     @Resource
     private UserService userService;
+
+    public static HashMap<String,HttpSession> sessions = new HashMap<>();
 
     @PostMapping("/login")
     @Operation(summary = "用户登录", description = "接受post请求体body中包含用户名和密码，返回登录成功的用户名")
@@ -40,6 +43,7 @@ public class UserController {
             }
     )
     public Result<String> loginController(@RequestBody User loginUser, HttpSession session, HttpServletResponse response) throws IOException {
+        System.out.println("用户名:"+loginUser.getUserName()+loginUser.getPassword());
 
         Boolean loginResult = userService.loginService(loginUser.getUserName(), loginUser.getPassword());
 
