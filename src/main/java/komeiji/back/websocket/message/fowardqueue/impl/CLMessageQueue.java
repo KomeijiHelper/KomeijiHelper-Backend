@@ -5,6 +5,7 @@ import komeiji.back.websocket.message.Message;
 import komeiji.back.websocket.message.fowardqueue.MessageForwardQueue;
 import komeiji.back.websocket.persistence.ConversationManager;
 import komeiji.back.websocket.session.Session;
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,8 +17,6 @@ public class CLMessageQueue implements MessageForwardQueue {
     private static final Logger logger = LoggerFactory.getLogger(CLMessageQueue.class);
 
     private final ConcurrentLinkedQueue<Message> queue = new ConcurrentLinkedQueue<>();
-
-    private final ConversationManager conversationManager = new ConversationManager();
 
     public CLMessageQueue() {}
 
@@ -37,7 +36,6 @@ public class CLMessageQueue implements MessageForwardQueue {
             logger.warn("channel of target {} is not writable", targetSession);
             return;
         }
-        conversationManager.addMessageRecord(msg);
         Object content = msg.messageDecode();
         targetSession.getConnect().writeAndFlush(content);
     }

@@ -19,9 +19,10 @@ public class TextMessageHandler extends SimpleChannelInboundHandler<TextMessage>
     private static final Logger logger = LoggerFactory.getLogger(TextMessageHandler.class);
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx,TextMessage  msg) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx,TextMessage msg) throws Exception {
         // NOTE: message has been parsed by Protocol here
         ctx.fireUserEventTriggered(new MessageForwardEvent(msg));
+        ctx.fireChannelRead(msg);
 //        String text = msg.getData();
 //        System.out.println("服务器收到消息 " + text);
 //

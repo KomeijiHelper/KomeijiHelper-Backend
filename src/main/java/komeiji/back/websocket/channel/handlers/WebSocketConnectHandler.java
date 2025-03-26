@@ -6,6 +6,9 @@ import komeiji.back.websocket.WebSocketServer;
 import komeiji.back.websocket.channel.Attributes;
 import komeiji.back.websocket.channel.events.handler.EventHandler;
 import komeiji.back.websocket.channel.events.handler.HandShakeCompleteEventHandler;
+import komeiji.back.websocket.persistence.Conversation;
+import komeiji.back.websocket.persistence.ConversationManager;
+import komeiji.back.websocket.persistence.impl.MockRecordstorage;
 import komeiji.back.websocket.protocol.ProtocolUtils;
 import komeiji.back.websocket.protocol.WebSocketFrameProtocol;
 import komeiji.back.websocket.session.OneWayChatSession;
@@ -38,7 +41,7 @@ public class WebSocketConnectHandler extends ChannelInboundHandlerAdapter {
         if(eventHandler.valid() && session == null) {
             eventHandler.handlerEvent(ctx);
             session = ctx.channel().attr(Attributes.SESSION).get();
-            buildConversation();
+            buildConversation(ctx);
         }
         super.userEventTriggered(ctx, evt);
     }
@@ -49,11 +52,12 @@ public class WebSocketConnectHandler extends ChannelInboundHandlerAdapter {
         super.exceptionCaught(ctx, cause);
     }
 
-    private void buildConversation(){
+    private void buildConversation(ChannelHandlerContext ctx){
         if(session == null | !(session instanceof OneWayChatSession)) {
             return;
         }
-
-
+        Conversation conversation = WebSocketServer.getWebSocketSingleServer().
+                getConversationManager().newConversation(session.getId(),session.getTarget(),new MockRecordstorage());
+        ctx.channel().attr(Attributes.CONVERSATION).set(conversation);
     }
 }
