@@ -1,6 +1,7 @@
 package komeiji.back.websocket.persistence;
 
 import komeiji.back.websocket.session.SessionToken;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,9 +14,16 @@ public class ConversationUtils {
     private ConversationUtils(){}
     private static final Logger logger = LoggerFactory.getLogger(ConversationUtils.class);
 
+    public static SessionToken min(@NotNull SessionToken a, @NotNull SessionToken b) {
+        return a.toString().compareTo(b.toString()) < 0 ? a : b;
+    }
+
+    public static SessionToken max(@NotNull SessionToken a, @NotNull SessionToken b) {
+        return a.toString().compareTo(b.toString()) > 0 ? a : b;
+    }
     /**
      * 使用java.util.UUID来生成一个唯一的标识符
-     * 基于session1和session2两个SessionToken,以及时间戳以及sha256生成uuid
+     * 基于session1和session2两个SessionToken
      * 该函数是对称的，即f(a,b)=f(b,a)
      * @param session1 session1的SessionToken
      * @param session2 session2的SessionToken
@@ -23,11 +31,9 @@ public class ConversationUtils {
      */
     public static UUID sessionTokens2CID(SessionToken session1, SessionToken session2) {
         StringBuilder stringBuilder = new StringBuilder();
-        long currentTime = System.currentTimeMillis();
 
-        stringBuilder.append(currentTime);
-        stringBuilder.append(session1);
-        stringBuilder.append(session2);
+        stringBuilder.append(min(session1, session2));
+        stringBuilder.append(max(session1, session2));
 
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");

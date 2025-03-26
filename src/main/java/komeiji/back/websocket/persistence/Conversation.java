@@ -37,4 +37,12 @@ public class Conversation {
     public void close() {
         storage.close();
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Conversation that = (Conversation) obj;
+        return CID.equals(that.CID) && timeStamp == that.timeStamp;
+    }
 }

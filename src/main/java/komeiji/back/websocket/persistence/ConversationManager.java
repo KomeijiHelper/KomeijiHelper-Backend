@@ -13,7 +13,7 @@ public class ConversationManager {
 
     private final ConcurrentMap<UUID, Conversation> conversations = new ConcurrentHashMap<>();
 
-    public Conversation newConversation(SessionToken session1, SessionToken session2, RecordStorage storage) {
+    public synchronized Conversation newConversation(SessionToken session1, SessionToken session2, RecordStorage storage) {
         UUID CID = ConversationUtils.sessionTokens2CID(session1, session2);
         Conversation oldConversation = conversations.get(CID);
         if (oldConversation != null) {
@@ -24,12 +24,12 @@ public class ConversationManager {
         return conversation;
     }
 
-    public void closeConversation(UUID CID) {
-        Conversation conversation = conversations.get(CID);
-        if (conversation == null) {
+    public void closeConversation(Conversation conversation) {
+        UUID CID = conversation.getCID();
+        // conversation has been close by the other channel or does not exist
+        if (!conversations.containsKey(CID)) {
             return;
         }
-        assert conversation.getCID().equals(CID);
         conversation.close();
         conversations.remove(CID);
     }

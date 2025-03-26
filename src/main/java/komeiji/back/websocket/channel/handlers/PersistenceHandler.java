@@ -33,6 +33,7 @@ public class PersistenceHandler extends SimpleChannelInboundHandler<Message> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Message msg) throws Exception {
+//        System.out.println("Conversation of msg " + msg + " is " + conversation.getCID());
         MessageRecord record = new MessageRecord(msg);
         conversation.storeRecord(record);
         ctx.fireChannelRead(msg);
