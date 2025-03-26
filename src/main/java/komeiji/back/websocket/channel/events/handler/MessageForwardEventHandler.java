@@ -22,7 +22,6 @@ public class MessageForwardEventHandler implements EventHandler {
         if (messageForwardEvent == null) {
             return;
         }
-        System.out.println("trigger message forward event");
         WebSocketServer.getWebSocketSingleServer().getMessageForwardQueue().sendMessage();
     }
 }

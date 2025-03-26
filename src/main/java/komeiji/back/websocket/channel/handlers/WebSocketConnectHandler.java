@@ -8,6 +8,7 @@ import komeiji.back.websocket.channel.events.handler.EventHandler;
 import komeiji.back.websocket.channel.events.handler.HandShakeCompleteEventHandler;
 import komeiji.back.websocket.protocol.ProtocolUtils;
 import komeiji.back.websocket.protocol.WebSocketFrameProtocol;
+import komeiji.back.websocket.session.OneWayChatSession;
 import komeiji.back.websocket.session.Session;
 
 public class WebSocketConnectHandler extends ChannelInboundHandlerAdapter {
@@ -37,6 +38,7 @@ public class WebSocketConnectHandler extends ChannelInboundHandlerAdapter {
         if(eventHandler.valid() && session == null) {
             eventHandler.handlerEvent(ctx);
             session = ctx.channel().attr(Attributes.SESSION).get();
+            buildConversation();
         }
         super.userEventTriggered(ctx, evt);
     }
@@ -45,5 +47,13 @@ public class WebSocketConnectHandler extends ChannelInboundHandlerAdapter {
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         System.out.println("exceptionCaught: " + cause.getMessage() + WebSocketConnectHandler.class.getName());
         super.exceptionCaught(ctx, cause);
+    }
+
+    private void buildConversation(){
+        if(session == null | !(session instanceof OneWayChatSession)) {
+            return;
+        }
+
+
     }
 }

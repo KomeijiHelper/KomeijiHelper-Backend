@@ -34,7 +34,7 @@ public class DefaultTextFrameProtocol extends TextFrameProtocol<Message> {
     @Override
     public Message frameTransform(TextWebSocketFrame frame, Session session) {
         String text = frame.text();
-        System.out.println(text);
+        System.out.println("DefaultTextFrameProtocol parse data into" + text);
 
         MessageBody body = MessageBody.buildMessageBody(text);
 

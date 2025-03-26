@@ -1,7 +1,5 @@
 package komeiji.back.websocket.persistence;
 
-import komeiji.back.websocket.session.Session;
-
 import java.util.Date;
 import java.util.List;
 
@@ -18,7 +16,7 @@ public class Conversation {
         this.records = records;
     }
 
-    public static Conversation newConversationInstance(Session session1, Session session2){
+    public static Conversation newConversationInstance(String CID){
         return null;
     }
 
