@@ -23,7 +23,7 @@ public class ChatRequestMessage extends Message {
     @Override
     public TextWebSocketFrame messageDecode() {
         return new TextWebSocketFrame(gson.toJson(Map.of(
-            "type", "consultant_request",
+            "type", "chat_request",
             "content", consultantId
         )));
     }
