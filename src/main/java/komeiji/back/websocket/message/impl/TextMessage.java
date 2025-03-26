@@ -21,7 +21,8 @@ public class TextMessage extends Message {
 
 
     @Override
-    public TextWebSocketFrame messageDecode() {
+    public TextWebSocketFrame
+    messageDecode() {
         return new TextWebSocketFrame(gson.toJson(Map.of("type","text","content",data)));
     }
 
