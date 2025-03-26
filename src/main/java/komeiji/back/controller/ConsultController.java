@@ -96,16 +96,20 @@ public class ConsultController {
             case WAITING:
                 //NOTICE 超时未回复，提醒用户并返回
                 result =  Result.error("408","请求超时，请重新预约");
+                break;
             case ACCEPTED:
                 //NOTICE 咨询师同意，建立连接 调用consultService
                 consultService.conenctRequest_Service(patient_sessiontoken,consultant_sessiontoken,Login_user,consult_id);
                 result = Result.success("成功建立连接");
+                break;
             case REJECTED:
                 //NOTICE 咨询师拒绝，提醒用户
                 result = Result.error("407","咨询师拒绝了您的请求");
+                break;
             case CANCELED:
                 //NOTICE 用户取消预约，提醒用户
                 result = Result.error("406","您已取消预约");
+                break;
         }
 
 
@@ -140,10 +144,11 @@ public class ConsultController {
 //        System.out.println("waiter.size():"+waiters.size());
 //        System.out.println("waiters:"+waiters);
 
+        System.out.println("收到回应" + chatResponse.accept);
         Optional<CountDownLatch> latch = Optional.ofNullable(waiters.get(chatResponse.patientId));
         if(latch.isPresent() && requestStatus_map.get(chatResponse.patientId).equals(ConsultRequestStatus.WAITING)){
             //TODO 根据accept_reject 进行不同业务处
-            if(chatResponse.accept_reject){
+            if(chatResponse.accept){
                 requestStatus_map.replace(chatResponse.patientId,ConsultRequestStatus.ACCEPTED);
             }
             else{
@@ -163,8 +168,8 @@ public class ConsultController {
     public static class ChatResponse {
         @Schema(description = "咨询者Id", example = "1")
         private String patientId;
-        @Schema(description = "同意与否", example = "True")
-        private boolean accept_reject;
+        @Schema(description = "同意与否", example = "0")
+        private boolean accept;
     }
 
     @Setter
