@@ -20,6 +20,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
@@ -58,7 +59,7 @@ public class ConsultController {
      **/
 
     @GetMapping("/connect_request")
-    public Result<String> connectRequest(@Param("consult_id") String consult_id, HttpSession session, HttpServletResponse response) throws IOException, InterruptedException {
+    public Result<String> connectRequest(@Param("consult_id") String consult_id, HttpSession session, HttpServletResponse response) throws IOException, InterruptedException, NoSuchAlgorithmException {
         //TODO 当前正在等待的用户不能重复预约
         String Login_user = (String)session.getAttribute("LoginUser");
 
