@@ -25,5 +25,17 @@ spring:
   mvc:
     path match:
       matching-strategy: ant_path_matcher
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+#      password: 123
+      lettuce:
+        pool:
+          min-idle: 0
+          max-idle: 8
+          max-wait: -1ms
+          max-active: 16
+
 
 swagger:
