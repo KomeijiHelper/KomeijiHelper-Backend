@@ -5,6 +5,10 @@ server:
       cookie:
         secure: true
         SameSite: None
+    encoding:
+      force: true
+      enabled: true
+      charset: UTF-8
 spring:
   profiles:
     active: local

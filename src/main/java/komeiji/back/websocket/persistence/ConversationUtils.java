@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
@@ -37,7 +38,7 @@ public class ConversationUtils {
 
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(stringBuilder.toString().getBytes());
+            byte[] hash = digest.digest(stringBuilder.toString().getBytes(StandardCharsets.UTF_8));
 
             ByteBuffer buffer = ByteBuffer.wrap(hash);
             long mostSigBits = buffer.getLong();
