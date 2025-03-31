@@ -54,6 +54,7 @@ public class UserController {
 
         if(loginResult){
             session.setAttribute("LoginUser", loginUser.getUserName());
+            session.setAttribute("id",loginUser.getId())
             return Result.success(loginUser.getUserName(), "登录成功");
         }
         else{
