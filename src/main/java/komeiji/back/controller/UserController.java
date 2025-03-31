@@ -8,12 +8,14 @@ import jakarta.servlet.http.HttpSession;
 import komeiji.back.entity.UserClass;
 import komeiji.back.service.UserService;
 import komeiji.back.entity.User;
+import komeiji.back.utils.RedisUtils;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.bind.annotation.*;
 import komeiji.back.utils.Result;
 import jakarta.annotation.Resource;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,6 +34,9 @@ public class UserController {
     @Resource
     private UserService userService;
 
+    @Resource
+    private RedisUtils redisUtils;
+
     public static HashMap<String,HttpSession> sessions = new HashMap<>();
 
     @PostMapping("/login")
@@ -49,6 +54,7 @@ public class UserController {
 
         if(loginResult){
             session.setAttribute("LoginUser", loginUser.getUserName());
+            session.setAttribute("id",loginUser.getId())
             return Result.success(loginUser.getUserName(), "登录成功");
         }
         else{
@@ -83,7 +89,18 @@ public class UserController {
 
     @GetMapping("/test")
     @Operation(summary = "测试接口", description = "测试接口")
-    public String test() { return "test"; }
+    public String test() {
+        List<Person> persons = new ArrayList<>();
+        persons.add(new Person("cjw", 25));
+        persons.add(new Person("lxy", 23));
+        persons.add(new Person("zxy", 22));
+        persons.add(new Person("zxy", 22));
+
+        redisUtils.set("persons", persons);
+        System.out.println(redisUtils.get("persons"));
+        return redisUtils.getString("persons");
+    }
+
 
     @GetMapping("/getUserName")
     @Operation(summary = "获取当前登录用户的用户名", description = "获取当前登录用户的用户名")
@@ -137,3 +154,16 @@ public class UserController {
         return user.getUserClass().getCode();
     }
 }
+
+ class Person{
+   String name;
+   int age;
+   public Person(){
+       this.name = "";
+       this.age = 0;
+   }
+   public Person(String name,int age){
+       this.name=name;
+       this.age=age;
+   }
+ }
