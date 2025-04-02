@@ -11,10 +11,12 @@ import komeiji.back.entity.User;
 import komeiji.back.utils.RedisUtils;
 import lombok.Getter;
 import lombok.Setter;
+import org.json.JSONObject;
 import org.springframework.web.bind.annotation.*;
 import komeiji.back.utils.Result;
 import jakarta.annotation.Resource;
-import java.io.IOException;
+
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -89,16 +91,23 @@ public class UserController {
 
     @GetMapping("/test")
     @Operation(summary = "测试接口", description = "测试接口")
-    public String test() {
+    public String test() throws IOException {
         List<Person> persons = new ArrayList<>();
         persons.add(new Person("cjw", 25));
         persons.add(new Person("lxy", 23));
         persons.add(new Person("zxy", 22));
         persons.add(new Person("zxy", 22));
 
-        redisUtils.set("persons", persons);
-        System.out.println(redisUtils.get("persons"));
-        return redisUtils.getString("persons");
+        for(int i = 0;i<persons.size();i++){
+            redisUtils.rpush("persons", persons.get(i));
+        }
+        Object cjw = redisUtils.lpop("persons");
+        System.out.println(cjw);
+        System.out.println(cjw.getClass());
+        OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream("E:\\coding\\workspace\\Test\\1.json"),"UTF-8");
+
+        return cjw.toString();
+
     }
 
 

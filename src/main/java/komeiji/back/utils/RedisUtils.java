@@ -112,6 +112,9 @@ public class RedisUtils {
     {
         return redisTemplate.opsForList().rightPop(key);
     }
+    public Long getListSize(String key){
+        return redisTemplate.opsForList().size(key);
+    }
 
 }
 
