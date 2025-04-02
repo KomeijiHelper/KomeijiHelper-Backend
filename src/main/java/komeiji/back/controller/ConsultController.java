@@ -8,7 +8,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import komeiji.back.entity.enum_entity.ConsultRequestStatus;
 import komeiji.back.service.ConsultService;
-import komeiji.back.service.ConsultantService;
 import komeiji.back.utils.Result;
 import komeiji.back.websocket.message.Message;
 import komeiji.back.websocket.message.MessageFactory;
