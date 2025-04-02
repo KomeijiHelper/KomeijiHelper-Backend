@@ -8,11 +8,13 @@ import lombok.Data;
 public abstract class Message {
     private SessionToken from;
     private SessionToken to;
+    private long timestamp;
 
 
-    public Message(SessionToken from, SessionToken to) {
+    public Message(SessionToken from, SessionToken to, long timestamp) {
         this.from = from;
         this.to = to;
+        this.timestamp = timestamp;
     }
 
     // We need to decode by ourselves the content send to Websocket channel

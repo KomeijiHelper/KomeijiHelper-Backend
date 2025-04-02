@@ -8,12 +8,12 @@ import java.util.Map;
 
 public class ChatConnectMessage extends TextMessage{
     // TODO:
-    public ChatConnectMessage(SessionToken from, SessionToken to) {
-        super(from, to);
+    public ChatConnectMessage(SessionToken from, SessionToken to, long timestamp) {
+        super(from, to, timestamp);
     }
 
-    public ChatConnectMessage(SessionToken from, SessionToken to, String data) {
-        super(from, to, data);
+    public ChatConnectMessage(SessionToken from, SessionToken to, String data, long timestamp) {
+        super(from, to, data, timestamp);
     }
 
     @Override

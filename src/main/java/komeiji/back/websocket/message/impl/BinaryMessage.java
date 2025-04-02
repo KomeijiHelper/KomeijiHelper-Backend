@@ -12,12 +12,12 @@ import lombok.Setter;
 public class BinaryMessage extends Message {
     private ByteBuf data;
 
-    public BinaryMessage(SessionToken from, SessionToken to) {
-        super(from, to);
+    public BinaryMessage(SessionToken from, SessionToken to, long timestamp) {
+        super(from, to, timestamp);
     }
 
-    public BinaryMessage(SessionToken from, SessionToken to, ByteBuf data) {
-        this(from, to);
+    public BinaryMessage(SessionToken from, SessionToken to, ByteBuf data, long timestamp) {
+        this(from, to, timestamp);
         this.data = data;
     }
 

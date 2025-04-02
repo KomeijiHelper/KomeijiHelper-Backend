@@ -81,7 +81,7 @@ public class ConsultController {
         chatRequest.setMessage("\"请求连接from:\"+Login_user");
         chatRequest.setPatientId(Login_user);
         Gson gson = new Gson();
-        Message toConsultant = MessageFactory.newTextMessage(MessageType.CHAT_REQUEST,patient_sessiontoken,consultant_sessiontoken,gson.toJson(chatRequest));
+        Message toConsultant = MessageFactory.newTextMessage(MessageType.CHAT_REQUEST,patient_sessiontoken,consultant_sessiontoken,gson.toJson(chatRequest), System.currentTimeMillis() / 1000);
         sendMessageInUserSession(toConsultant);
 
         //NOTICE 等待咨询师恢复

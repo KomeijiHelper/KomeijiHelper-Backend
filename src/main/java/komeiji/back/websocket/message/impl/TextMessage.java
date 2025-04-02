@@ -15,19 +15,19 @@ public class TextMessage extends Message {
     protected static Gson gson = new Gson();
     protected String data;
 
-    public TextMessage(SessionToken from, SessionToken to) {
-        super(from,to);
+    public TextMessage(SessionToken from, SessionToken to, long timestamp) {
+        super(from,to, timestamp);
     }
 
 
     @Override
     public TextWebSocketFrame
     messageDecode() {
-        return new TextWebSocketFrame(gson.toJson(Map.of("type","text","content",data)));
+        return new TextWebSocketFrame(gson.toJson(Map.of("type","text","content", data, "timestamp", getTimestamp())));
     }
 
-    public TextMessage(SessionToken from, SessionToken to, String data) {
-        this(from,to);
+    public TextMessage(SessionToken from, SessionToken to, String data, long timestamp) {
+        this(from, to, timestamp);
         this.data = data;
     }
 

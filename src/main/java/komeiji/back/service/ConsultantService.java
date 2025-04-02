@@ -24,10 +24,11 @@ public class ConsultantService {
         if (consultantSession != null) {
             consultantSession.getConnect().writeAndFlush(
                 MessageFactory.newTextMessage(
-                    MessageType.CHAT_REQUEST,
-                    new SessionToken(userId),
-                    new SessionToken(consultantId),
-                    userId
+                        MessageType.CHAT_REQUEST,
+                        new SessionToken(userId),
+                        new SessionToken(consultantId),
+                        userId,
+                        System.currentTimeMillis() / 1000
                 ).messageDecode()
             );
         }

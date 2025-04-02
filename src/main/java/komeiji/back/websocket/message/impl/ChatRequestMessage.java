@@ -15,8 +15,8 @@ public class ChatRequestMessage extends Message {
     private static Gson gson = new Gson();
     private String consultantId;
 
-    public ChatRequestMessage(SessionToken from, SessionToken to, String consultantId) {
-        super(from, to);
+    public ChatRequestMessage(SessionToken from, SessionToken to, String consultantId,  long timestamp) {
+        super(from, to, timestamp);
         this.consultantId = consultantId;
     }
 

@@ -37,8 +37,8 @@ public class ConsultServiceImpl implements ConsultService {
         String to_patient = gson.toJson(Map.of("from",patient_md,"to",consultant_md));
         String to_consultant = gson.toJson(Map.of("from",consultant_md,"to",patient_md));
 
-        Message ToPatient = MessageFactory.newTextMessage(MessageType.CHAT_CONNECT,consultant_sessiontoken,patient_sessiontoken,to_patient);
-        Message ToConsultant = MessageFactory.newTextMessage(MessageType.CHAT_CONNECT,patient_sessiontoken,consultant_sessiontoken,to_consultant);
+        Message ToPatient = MessageFactory.newTextMessage(MessageType.CHAT_CONNECT,consultant_sessiontoken,patient_sessiontoken,to_patient,System.currentTimeMillis() / 1000);
+        Message ToConsultant = MessageFactory.newTextMessage(MessageType.CHAT_CONNECT,patient_sessiontoken,consultant_sessiontoken,to_consultant,System.currentTimeMillis() / 1000);
 
         sendMessageInUserSession(ToPatient);
         sendMessageInUserSession(ToConsultant);

@@ -14,10 +14,12 @@ class MessageBody {
 
     public MessageType type;
     public String content;
+    public long timestamp;
 
-    public MessageBody(MessageType type, String content) {
+    public MessageBody(MessageType type, String content, long timestamp) {
         this.type = type;
         this.content = content;
+        this.timestamp = timestamp;
     }
 
     public static MessageBody buildMessageBody(String json) {
@@ -25,7 +27,8 @@ class MessageBody {
 
         MessageType type = MessageType.fromString(jsonObject.get("type").getAsString());
         String content = jsonObject.get("content").getAsString();
-        return new MessageBody(type, content);
+        long timestamp = jsonObject.get("timestamp").getAsLong();
+        return new MessageBody(type, content, timestamp);
     }
 }
 
@@ -38,7 +41,7 @@ public class DefaultTextFrameProtocol extends TextFrameProtocol<Message> {
 
         MessageBody body = MessageBody.buildMessageBody(text);
 
-        return MessageFactory.newTextMessage(body.type,session.getId(),session.getTarget(),body.content);
+        return MessageFactory.newTextMessage(body.type, session.getId(), session.getTarget(), body.content, body.timestamp);
     }
 
 

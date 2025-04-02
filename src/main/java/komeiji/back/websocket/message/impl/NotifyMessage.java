@@ -6,12 +6,12 @@ import komeiji.back.websocket.session.SessionToken;
 
 public class NotifyMessage extends TextMessage {
 
-    public NotifyMessage(SessionToken from, SessionToken to) {
-        super(from, to);
+    public NotifyMessage(SessionToken from, SessionToken to, long timestamp) {
+        super(from, to, timestamp);
     }
 
-    public NotifyMessage(SessionToken from, SessionToken to, String text) {
-        this(from, to);
+    public NotifyMessage(SessionToken from, SessionToken to, String text, long timestamp) {
+        this(from, to, timestamp);
         this.data = text;
     }
 
