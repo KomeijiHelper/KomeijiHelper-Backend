@@ -115,18 +115,8 @@ public class UserController {
     public Result<String> getUsersByClass(@RequestBody UserClassRequest userClassRequest, HttpServletResponse response, HttpSession session) throws IOException {
         UserClass requestUserClass = getUserBySession(session).getUserClass();
         Gson gson;
-        ExclusionStrategy exclusionStrategy = new ExclusionStrategy() {
-            @Override
-            public boolean shouldSkipField(FieldAttributes fieldAttributes) {
-                return false;
-            }
-
-            @Override
-            public boolean shouldSkipClass(Class<?> aClass) {
-                return false;
-            }
-        };
-        if (requestUserClass == UserClass.Normal){
+        ExclusionStrategy exclusionStrategy;
+        if (requestUserClass != UserClass.Manager){
             exclusionStrategy = new ExclusionStrategy() {
                 @Override
                 public boolean shouldSkipField(FieldAttributes f) {
@@ -142,11 +132,29 @@ public class UserController {
                     return false; // 不排除类
                 }
             };
+        } else {
+            exclusionStrategy = new ExclusionStrategy() {
+                @Override
+                public boolean shouldSkipField(FieldAttributes f) {
+                    return false;
+                }
+
+                @Override
+                public boolean shouldSkipClass(Class<?> clazz) {
+                    return false; // 不排除类
+                }
+            };
         }
 
         gson = new GsonBuilder().setExclusionStrategies(exclusionStrategy).create();
-        UserClass userClass = UserClass.fromCode(userClassRequest.userClassCode);
-        List<User> users = userService.getUsersByUserClass(userClass);
+        List<User> users;
+        if (userClassRequest.userClassCode == -1){
+            users = userService.getAllUsers();
+        } else {
+            UserClass userClass = UserClass.fromCode(userClassRequest.userClassCode);
+            users = userService.getUsersByUserClass(userClass);
+        }
+
         String result = gson.toJson(users);
         return users.isEmpty()
                 ? Result.error(401, "User Not Found", response)
