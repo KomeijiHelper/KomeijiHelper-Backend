@@ -58,6 +58,7 @@ public class WebSocketConnectHandler extends ChannelInboundHandlerAdapter {
         }
         Conversation conversation = WebSocketServer.getWebSocketSingleServer().
                 getConversationManager().newConversation(session.getId(),session.getTarget(),new MockRecordstorage());
+        conversation.tryStart();
         ctx.channel().attr(Attributes.CONVERSATION).set(conversation);
     }
 }

@@ -1,5 +1,7 @@
 package komeiji.back.websocket.persistence;
 
+import komeiji.back.websocket.persistence.meta.Meta;
+
 import java.util.List;
 
 public interface RecordStorage {
@@ -8,4 +10,6 @@ public interface RecordStorage {
    int batchStorage(List<MessageRecord> records);
 
    void close();
+
+   void setMeta(Meta metadata);
 }

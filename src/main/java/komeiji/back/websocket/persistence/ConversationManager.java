@@ -17,9 +17,11 @@ public class ConversationManager {
         UUID CID = ConversationUtils.sessionTokens2CID(session1, session2);
         Conversation oldConversation = conversations.get(CID);
         if (oldConversation != null) {
+            oldConversation.addCharacter(session1);
             return oldConversation;
         }
         Conversation conversation = Conversation.newConversationInstance(CID,storage);
+        conversation.addCharacter(session1);
         conversations.put(CID, conversation);
         return conversation;
     }
