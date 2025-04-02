@@ -131,7 +131,9 @@ public class UserController {
 
     @GetMapping("/checkSession")
     @Operation(summary = "检查session", description = "接受客户端请求，经过拦截器检测后如果没问题则返回值，否则在拦截器中返回error")
-    public Boolean checkSession() {
-        return true;
+    public int checkSession(HttpSession session) {
+        Object userName = session.getAttribute("LoginUser");
+        User user = userService.getUserByName(userName.toString());
+        return user.getUserClass().getCode();
     }
 }

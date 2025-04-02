@@ -13,7 +13,6 @@ public class LoginHandlerInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         //登陆成功之后应该有用户的session
         Object userName = request.getSession().getAttribute("LoginUser");
-        //System.out.println(request.getSession().getId() + "\n" + userName);
 
         //拦截器取到请求先进行判断，如果是OPTIONS请求，则放行
         if("OPTIONS".equalsIgnoreCase(request.getMethod())) {
@@ -37,7 +36,6 @@ public class LoginHandlerInterceptor implements HandlerInterceptor {
             response.setStatus(401);
             printWriter.flush();
             printWriter.close();
-            //response.sendRedirect(request.getContextPath() + "/user/login");
             return false;
         } else {
             return true;
