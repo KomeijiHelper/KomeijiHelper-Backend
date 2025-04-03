@@ -1,29 +1,29 @@
 package komeiji.back.websocket.persistence.impl;
 
 import jakarta.annotation.Resource;
+import komeiji.back.utils.BeanUtils;
 import komeiji.back.utils.RedisUtils;
 import komeiji.back.websocket.persistence.MessageRecord;
 import komeiji.back.websocket.persistence.RecordStorage;
 import komeiji.back.websocket.persistence.meta.Meta;
 import org.json.JSONObject;
+import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.util.List;
 import java.util.UUID;
 
+@Component
 public class RedisRecordstorage implements RecordStorage {
-    @Resource
-    private RedisUtils redisUtils;
+
+    private final RedisUtils redisUtils = BeanUtils.getBean(RedisUtils.class);
 
     private UUID uuid;
     private Meta meta;
 
-    public void set_Uuid(UUID uuid){
-        this.uuid = uuid;
-        redisUtils.lpush(uuid.toString(), uuid.toString()+System.currentTimeMillis());
-    }
     @Override
     public int singleStorage(MessageRecord record) {
+        System.out.println("_________-singleStorage-_________"+uuid.toString());
         redisUtils.rpush(uuid.toString(),record);
         return 0;
 
@@ -31,6 +31,7 @@ public class RedisRecordstorage implements RecordStorage {
 
     @Override
     public int batchStorage(List<MessageRecord> records) {
+        System.out.println("_________-singleStorage-_________"+uuid.toString());
         for(int i = 0;i<records.size();i++){
             redisUtils.rpush(uuid.toString(),records.get(i));
         }
@@ -39,12 +40,14 @@ public class RedisRecordstorage implements RecordStorage {
 
     @Override
     public void close()  {
+        System.out.println("_________-close-_________");
         String filePath = this.meta.getStorePath();
+        File file = new File(filePath + "/1.json");
         redisUtils.lpush(uuid.toString(),this.meta);
 
         OutputStreamWriter osw = null;
         try {
-            osw = new OutputStreamWriter(new FileOutputStream(filePath),"UTF-8");
+            osw = new OutputStreamWriter(new FileOutputStream(filePath+"/1.json"),"UTF-8");
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         } catch (FileNotFoundException e) {
@@ -75,5 +78,7 @@ public class RedisRecordstorage implements RecordStorage {
     @Override
     public void setMeta(Meta metadata) {
        this.meta = metadata;
+       this.uuid = metadata.getUuid();
+       redisUtils.lpush(uuid.toString(),this.meta);
     }
 }

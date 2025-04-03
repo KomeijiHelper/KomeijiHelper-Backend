@@ -37,7 +37,7 @@ public class UserController {
     private UserService userService;
 
     @Resource
-    private RedisUtils redisUtils;
+    public RedisUtils redisUtils;
 
     public static HashMap<String,HttpSession> sessions = new HashMap<>();
 
@@ -56,7 +56,7 @@ public class UserController {
 
         if(loginResult){
             session.setAttribute("LoginUser", loginUser.getUserName());
-            session.setAttribute("id",loginUser.getId())
+            session.setAttribute("id",loginUser.getId());
             return Result.success(loginUser.getUserName(), "登录成功");
         }
         else{

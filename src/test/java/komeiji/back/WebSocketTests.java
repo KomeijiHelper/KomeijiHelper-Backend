@@ -11,12 +11,15 @@ import komeiji.back.websocket.session.SessionManager;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
+@SpringBootTest(classes = {BackApplication.class})
+//@RunWith(SpringRunner.class)
 public class WebSocketTests {
 
     private static final int port = 55480;
@@ -61,7 +64,7 @@ public class WebSocketTests {
     }
 
     @Test
-    void testChat(){
+    public void testChat(){
         OkHttpClient client = new OkHttpClient();
         Request request1 = new Request.Builder().url("ws://localhost:" + port + "/ws?from=test1&to=test2").build();
         Request request2 = new Request.Builder().url("ws://localhost:" + port + "/ws?from=test2&to=test1").build();
@@ -88,6 +91,7 @@ public class WebSocketTests {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("type", "text");
         jsonObject.addProperty("content", "hello");
+        jsonObject.addProperty("timestamp", System.currentTimeMillis());;
 
         socket1.send(jsonObject.toString());
         socket1.send(jsonObject.toString());

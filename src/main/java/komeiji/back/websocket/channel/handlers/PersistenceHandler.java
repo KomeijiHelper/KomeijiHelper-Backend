@@ -3,6 +3,7 @@ package komeiji.back.websocket.channel.handlers;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
+import komeiji.back.websocket.WebSocketServer;
 import komeiji.back.websocket.channel.Attributes;
 import komeiji.back.websocket.message.Message;
 import komeiji.back.websocket.persistence.Conversation;
@@ -28,6 +29,11 @@ public class PersistenceHandler extends SimpleChannelInboundHandler<Message> {
             logger.info("channel is not a conversation channel");
         }
         super.userEventTriggered(ctx, evt);
+    }
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        WebSocketServer.getWebSocketSingleServer().getConversationManager().closeConversation(conversation);
+        super.channelInactive(ctx);
     }
 
     @Override

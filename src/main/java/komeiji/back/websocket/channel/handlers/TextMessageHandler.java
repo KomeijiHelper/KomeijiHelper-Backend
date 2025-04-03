@@ -89,10 +89,10 @@ public class TextMessageHandler extends SimpleChannelInboundHandler<TextMessage>
         System.out.println("handlerAdded 被调用" + ctx.channel().id().asShortText());
     }
 
-    @Override
-    public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("handlerRemoved 被调用" + ctx.channel().id().asLongText());
-    }
+//    @Override
+//    public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
+//        System.out.println("handlerRemoved 被调用" + ctx.channel().id().asLongText());
+//    }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
