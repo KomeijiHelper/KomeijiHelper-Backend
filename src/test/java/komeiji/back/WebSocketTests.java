@@ -6,7 +6,9 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import komeiji.back.websocket.WebSocketServer;
 import komeiji.back.websocket.message.fowardqueue.impl.CLMessageQueue;
+import komeiji.back.websocket.persistence.ConversationManager;
 import komeiji.back.websocket.session.SessionManager;
+import komeiji.back.websocket.session.SessionToken;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
@@ -21,15 +23,14 @@ public class WebSocketTests {
     private static final int port = 55480;
     private static final WebSocketServer webSocketServer = WebSocketServer.getWebSocketSingleServer(LogLevel.INFO,8192,"/ws",
             new SessionManager(new DefaultChannelGroup(GlobalEventExecutor.INSTANCE)),
-            new CLMessageQueue());
+            new CLMessageQueue(),
+            new ConversationManager());
 
     static {
         // start server
         ExecutorService executorService = Executors.newSingleThreadExecutor();
 
-        Runnable serverTask = () -> {
-            webSocketServer.startServer(port);
-        };
+        Runnable serverTask = () -> webSocketServer.startServer(port);
 
         executorService.submit(serverTask);
         executorService.shutdown();
@@ -90,6 +91,7 @@ public class WebSocketTests {
         jsonObject.addProperty("content", "hello");
 
         socket1.send(jsonObject.toString());
+        socket1.send(jsonObject.toString());
         socket2.send(jsonObject.toString());
 
         try {
@@ -99,10 +101,14 @@ public class WebSocketTests {
         }
 
         socket1.close(1000,"success");
-        socket2.close(1000,"success");
         client.dispatcher().executorService().shutdown();
     }
 
 
-
+    @Test
+    public void testSessionToken() {
+        SessionToken s1 = new SessionToken("test1");
+        SessionToken s2 = new SessionToken("test1");
+        assert s1.equals(s2);
+    }
 }

@@ -1,28 +1,87 @@
 package komeiji.back.websocket.persistence;
 
-import komeiji.back.websocket.session.Session;
 
-import java.util.Date;
+import komeiji.back.websocket.persistence.meta.Character;
+import komeiji.back.websocket.persistence.meta.Meta;
+import komeiji.back.websocket.session.SessionToken;
+import lombok.Getter;
+import lombok.Setter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+
+
 
 public class Conversation {
-    // TODO: 根据from和to的token来设置一个唯一的CID,from和to的顺序不影响
-    private String CID;
-    private Date StartTime;
-    private List<MessageRecord> records;
+    @Getter
+    private UUID CID;
+    private RecordStorage storage;
+
+    // meta data
+    @Getter
+    private long timeStamp;
+    private List<Character> characters;
+    @Getter @Setter
+    private boolean hasStarted = false;
+
+    public void addCharacter(SessionToken token) {
+        characters.add(new Character(token));
+    }
+
+    private void start(){
+        this.timeStamp = System.currentTimeMillis();
+        String sessionDirPath = String.format("chats/%s", CID);
+        try {
+            Files.createDirectories(Paths.get(sessionDirPath));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        String storePath = String.format("%s/%s.json", sessionDirPath,timeStamp);
+        storage.setMeta(new Meta(CID,timeStamp,characters, storePath));
+    }
 
     private Conversation(){}
-    private Conversation(String cid, Date startTime, List<MessageRecord> records){
+    private Conversation(UUID cid,RecordStorage storage){
+        this.characters = new ArrayList<>();
         this.CID = cid;
-        this.StartTime = startTime;
-        this.records = records;
+        this.storage = storage;
     }
 
-    public static Conversation newConversationInstance(Session session1, Session session2){
-        return null;
+    public static Conversation newConversationInstance(UUID CID,RecordStorage storage){
+        return new Conversation(CID,storage);
     }
 
-    public void addRecord(MessageRecord record) {
-        records.add(record);
+    public void storeRecord(MessageRecord record) {
+        int ret = storage.singleStorage(record);
+        // TODO: handle ret
+    }
+
+    public void storeRecord(List<MessageRecord> records) {
+        int ret = storage.batchStorage(records);
+        // TODO: handle ret
+    }
+
+    public void close() {
+        storage.close();
+    }
+
+    public synchronized void tryStart() {
+        if(hasStarted) return;
+        if(characters.size() == 2) {
+            hasStarted = true;
+            start();
+        }
+    }
+
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Conversation that = (Conversation) obj;
+        return CID.equals(that.CID) && timeStamp == that.timeStamp;
     }
 }

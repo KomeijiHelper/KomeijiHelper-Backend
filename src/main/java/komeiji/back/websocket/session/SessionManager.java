@@ -7,13 +7,14 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class SessionManager {
     private static final Logger logger = LoggerFactory.getLogger(SessionManager.class);
     private final ChannelGroup channels;
     @Getter
-    private final Map<SessionToken, Session> chatSessions = new HashMap<>();
-    private final Map<SessionToken, Session> userSessions = new HashMap<>();
+    private final Map<SessionToken, Session> chatSessions = new ConcurrentHashMap<>();
+    private final Map<SessionToken, Session> userSessions = new ConcurrentHashMap<>();
 
 
     public SessionManager(ChannelGroup channels) {
