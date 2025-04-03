@@ -33,13 +33,14 @@ public class Conversation {
 
     private void start(){
         this.timeStamp = System.currentTimeMillis();
-        String storeFilePath = String.format("chats/%s/%s.json", CID, timeStamp);
+        String sessionDirPath = String.format("chats/%s", CID);
         try {
-            Files.createDirectories(Paths.get(CID.toString()));
+            Files.createDirectories(Paths.get(sessionDirPath));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        storage.setMeta(new Meta(CID,timeStamp,characters, storeFilePath));
+        String storePath = String.format("%s/%s.json", sessionDirPath,timeStamp);
+        storage.setMeta(new Meta(CID,timeStamp,characters, storePath));
     }
 
     private Conversation(){}
