@@ -10,6 +10,7 @@ import komeiji.back.websocket.channel.Attributes;
 import komeiji.back.websocket.channel.events.MessageForwardEvent;
 import komeiji.back.websocket.message.MessageType;
 import komeiji.back.websocket.message.impl.TextMessage;
+import komeiji.back.websocket.persistence.MessageRecord;
 import komeiji.back.websocket.session.Session;
 import komeiji.back.websocket.session.SessionToken;
 import org.slf4j.Logger;
@@ -22,7 +23,8 @@ public class TextMessageHandler extends SimpleChannelInboundHandler<TextMessage>
     protected void channelRead0(ChannelHandlerContext ctx,TextMessage msg) throws Exception {
         // NOTE: message has been parsed by Protocol here
         ctx.fireUserEventTriggered(new MessageForwardEvent(msg));
-        ctx.fireChannelRead(msg);
+        MessageRecord msgRecord = new MessageRecord(msg.getFrom(),msg.getTimestamp(),"text", msg.getData());
+        ctx.fireChannelRead(msgRecord);
 //        String text = msg.getData();
 //        System.out.println("服务器收到消息 " + text);
 //

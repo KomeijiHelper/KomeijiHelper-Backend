@@ -15,6 +15,7 @@ public class BinaryMessageHandler extends SimpleChannelInboundHandler<BinaryMess
 
         logger.debug("handler text message: {}",msg);
         ctx.fireUserEventTriggered(new MessageForwardEvent(msg));
+        // TODO: build messageRecord
     }
 
     @Override

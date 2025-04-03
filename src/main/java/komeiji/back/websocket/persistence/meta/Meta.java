@@ -10,7 +10,7 @@ public class Meta {
     UUID uuid;
     long timestamp;
     List<Character> characters;
-    String storePath;
+    transient String storePath;
 
     public Meta(UUID uuid, long timestamp, List<Character> characters, String storePath){
         this.uuid = uuid;

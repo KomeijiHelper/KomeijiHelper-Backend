@@ -13,11 +13,10 @@ public class MessageRecord {
     
     private MessageRecord(){}
 
-    public MessageRecord(Message msg) {
-        this.timestamp = msg.getTimestamp();
-        this.token = msg.getFrom();
-        this.type = msg.getClass().getSimpleName();
-        this.data = ((TextMessage) msg).getData();
-
+    public MessageRecord(SessionToken token, long timestamp, String type, String data) {
+        this.token = token;
+        this.timestamp = timestamp;
+        this.type = type;
+        this.data = data;
     }
 }
