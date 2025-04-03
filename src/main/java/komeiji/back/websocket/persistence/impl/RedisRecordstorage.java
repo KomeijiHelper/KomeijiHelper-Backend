@@ -13,7 +13,6 @@ import java.io.*;
 import java.util.List;
 import java.util.UUID;
 
-@Component
 public class RedisRecordstorage implements RecordStorage {
 
     private final RedisUtils redisUtils = BeanUtils.getBean(RedisUtils.class);
@@ -40,14 +39,16 @@ public class RedisRecordstorage implements RecordStorage {
 
     @Override
     public void close()  {
+        if(!redisUtils.hasKey(uuid.toString())){
+            System.out.println("Key does not exist");
+            return;
+        }
         System.out.println("_________-close-_________");
         String filePath = this.meta.getStorePath();
-        File file = new File(filePath + "/1.json");
-        redisUtils.lpush(uuid.toString(),this.meta);
 
         OutputStreamWriter osw = null;
         try {
-            osw = new OutputStreamWriter(new FileOutputStream(filePath+"/1.json"),"UTF-8");
+            osw = new OutputStreamWriter(new FileOutputStream(filePath),"UTF-8");
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         } catch (FileNotFoundException e) {
@@ -55,8 +56,8 @@ public class RedisRecordstorage implements RecordStorage {
         }
 
         JSONObject obj=new JSONObject();//创建JSONObject对象
-        obj.put("meta",redisUtils.lpop(uuid.toString()));
 
+        Object meta = redisUtils.lpop(uuid.toString());
         long sz = redisUtils.getListSize(uuid.toString());
         for(long i = 0;i<sz;i++)
         {
@@ -64,6 +65,7 @@ public class RedisRecordstorage implements RecordStorage {
             subObj.put(String.valueOf(i),redisUtils.lpop(uuid.toString()));
             obj.accumulate("Message",subObj);
         }
+        obj.put("Meta",meta);
 
         try {
             osw.write(obj.toString());

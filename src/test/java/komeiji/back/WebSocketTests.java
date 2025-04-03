@@ -8,6 +8,7 @@ import komeiji.back.websocket.WebSocketServer;
 import komeiji.back.websocket.message.fowardqueue.impl.CLMessageQueue;
 import komeiji.back.websocket.persistence.ConversationManager;
 import komeiji.back.websocket.session.SessionManager;
+import komeiji.back.websocket.session.SessionToken;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
@@ -104,10 +105,14 @@ public class WebSocketTests {
         }
 
         socket1.close(1000,"success");
-        socket2.close(1000,"success");
         client.dispatcher().executorService().shutdown();
     }
 
 
-
+    @Test
+    public void testSessionToken() {
+        SessionToken s1 = new SessionToken("test1");
+        SessionToken s2 = new SessionToken("test1");
+        assert s1.equals(s2);
+    }
 }

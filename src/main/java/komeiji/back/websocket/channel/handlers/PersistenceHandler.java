@@ -30,6 +30,7 @@ public class PersistenceHandler extends SimpleChannelInboundHandler<Message> {
         }
         super.userEventTriggered(ctx, evt);
     }
+
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         WebSocketServer.getWebSocketSingleServer().getConversationManager().closeConversation(conversation);

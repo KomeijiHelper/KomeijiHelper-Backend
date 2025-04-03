@@ -1,5 +1,9 @@
 package komeiji.back.controller;
 
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
@@ -120,8 +124,7 @@ public class UserController {
             }
     )
     public Result<String> getUserName(HttpSession session, HttpServletResponse response) throws IOException {
-        Object userName = session.getAttribute("LoginUser");
-        User user = userService.getUserByName(userName.toString());
+        User user = getUserBySession(session);
         return user == null
                 ? Result.error(401, "User Not Found", response)
                 : Result.success(user.getUserName());
@@ -135,15 +138,53 @@ public class UserController {
             }
     )
     @Operation(summary = "根据用户类别获取用户列表", description = "获取成功返回用户列表，失败返回错误信息401")
-    public Result<List<String>> getUsersByClass(@RequestBody UserClassRequest userClassRequest, HttpServletResponse response) throws IOException {
-        UserClass userClass = UserClass.fromCode(userClassRequest.userClassCode);
-        List<User> users = userService.getUsersByUserClass(userClass);
-        List<String> names = users.stream()
-                .map(User::getUserName)
-                .toList();
+    public Result<String> getUsersByClass(@RequestBody UserClassRequest userClassRequest, HttpServletResponse response, HttpSession session) throws IOException {
+        UserClass requestUserClass = getUserBySession(session).getUserClass();
+        Gson gson;
+        ExclusionStrategy exclusionStrategy;
+        if (requestUserClass != UserClass.Manager){
+            exclusionStrategy = new ExclusionStrategy() {
+                @Override
+                public boolean shouldSkipField(FieldAttributes f) {
+                    String filedName = f.getName();
+                    return filedName.equals("password")
+                            || filedName.equals("id")
+                            || filedName.equals("userClass")
+                            || filedName.equals("email");
+                }
+
+                @Override
+                public boolean shouldSkipClass(Class<?> clazz) {
+                    return false; // 不排除类
+                }
+            };
+        } else {
+            exclusionStrategy = new ExclusionStrategy() {
+                @Override
+                public boolean shouldSkipField(FieldAttributes f) {
+                    return false;
+                }
+
+                @Override
+                public boolean shouldSkipClass(Class<?> clazz) {
+                    return false; // 不排除类
+                }
+            };
+        }
+
+        gson = new GsonBuilder().setExclusionStrategies(exclusionStrategy).create();
+        List<User> users;
+        if (userClassRequest.userClassCode == -1){
+            users = userService.getAllUsers();
+        } else {
+            UserClass userClass = UserClass.fromCode(userClassRequest.userClassCode);
+            users = userService.getUsersByUserClass(userClass);
+        }
+
+        String result = gson.toJson(users);
         return users.isEmpty()
                 ? Result.error(401, "User Not Found", response)
-                : Result.success(names);
+                : Result.success(result);
     }
 
 
@@ -158,9 +199,12 @@ public class UserController {
     @GetMapping("/checkSession")
     @Operation(summary = "检查session", description = "接受客户端请求，经过拦截器检测后如果没问题则返回值，否则在拦截器中返回error")
     public int checkSession(HttpSession session) {
+        return getUserBySession(session).getUserClass().getCode();
+    }
+
+    private User getUserBySession(HttpSession session) {
         Object userName = session.getAttribute("LoginUser");
-        User user = userService.getUserByName(userName.toString());
-        return user.getUserClass().getCode();
+        return userService.getUserByName(userName.toString());
     }
 }
 
