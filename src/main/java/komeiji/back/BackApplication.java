@@ -7,6 +7,7 @@ import io.netty.util.concurrent.GlobalEventExecutor;
 import komeiji.back.utils.RedisUtils;
 import komeiji.back.websocket.WebSocketServer;
 import komeiji.back.websocket.message.fowardqueue.impl.CLMessageQueue;
+import komeiji.back.websocket.persistence.ConversationManager;
 import komeiji.back.websocket.session.SessionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -20,7 +21,8 @@ public class BackApplication {
         SpringApplication.run(BackApplication.class, args);
         WebSocketServer webSocketServer = WebSocketServer.getWebSocketSingleServer(LogLevel.INFO,8192,"/ws",
                 new SessionManager(new DefaultChannelGroup(GlobalEventExecutor.INSTANCE)),
-                new CLMessageQueue());
+                new CLMessageQueue(),
+                new ConversationManager());
         webSocketServer.startServer(54950);
     }
 }
