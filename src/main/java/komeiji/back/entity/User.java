@@ -13,9 +13,11 @@ public class User {
     private long id;
 
     @Schema(description = "用户名",example = "admin",required = true)
+    @Column(unique = true,nullable = false)
     private String userName;
 
     @Schema(description = "密码",example = "123456",required = true)
+    @Column(nullable = false)
     private String password;
 
     @Schema(description = "用户类别",example = "0")
