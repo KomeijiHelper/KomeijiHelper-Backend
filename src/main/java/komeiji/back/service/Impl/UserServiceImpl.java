@@ -16,11 +16,12 @@ public class UserServiceImpl implements UserService {
     private UserDao userDao;
 
     @Override
-    public Boolean loginService(String userName, String password) {
+    public User loginService(String userName, String password) {
         System.out.println("userName: " + userName);
         System.out.println("password: " + password);
         User user = userDao.findByUserNameAndPassword(userName, password);
-        return user != null;
+        return user;
+
     }
 
     @Override
@@ -47,4 +48,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> getAllUsers() { return userDao.findAll(); }
+
+    @Override
+    public int updateUser(User user) {
+        return userDao.updateUser(user.getUserName(), user.getPassword(), user.getUserClass(), user.getEmail(), user.getId());
+    }
 }

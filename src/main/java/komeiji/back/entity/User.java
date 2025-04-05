@@ -22,7 +22,7 @@ public class User {
     private UserClass userClass = UserClass.Normal;
 
     @Schema(description = "邮箱",example = "admin@example.com")
-    private String email;
+    private String email = "";
 
     public long getId() {
         return id;
@@ -62,5 +62,15 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", userName='" + userName + '\'' +
+                ", password='" + password + '\'' +
+                ", userClass=" + userClass +
+                ", email='" + email + '\'' +
+                '}';
     }
 }
