@@ -77,7 +77,7 @@ public class ConsultController {
 
         //NOTICE 根据SessionToken 利用MessageFactory.newTextMessage发送消息   向对应的咨询师发送请求连接的信息
         ChatRequest chatRequest = new ChatRequest();
-        chatRequest.setMessage("\"请求连接from:\"+Login_user");
+        chatRequest.setMessage("\"请求连接from:\""+Login_user);
         chatRequest.setPatientId(Login_user);
         Gson gson = new Gson();
         Message toConsultant = MessageFactory.newTextMessage(MessageType.CHAT_REQUEST,patient_sessiontoken,consultant_sessiontoken,gson.toJson(chatRequest), System.currentTimeMillis() / 1000);
