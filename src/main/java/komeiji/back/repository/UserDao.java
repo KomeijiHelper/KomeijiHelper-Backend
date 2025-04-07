@@ -23,6 +23,6 @@ public interface UserDao extends JpaRepository<User,Long>{
 
     @Modifying
     @Transactional
-    @Query("update User u set u.password = ?2,u.userClass = ?3,u.email = ?4 where u.id = ?5")
-    int updateUser(@Param("1") String uname, @Param("2") String password, @Param("3") UserClass userClass, @Param("4") String email, @Param("5") long id);
+    @Query("update User u set u.password = ?1,u.userClass = ?2,u.email = ?3 where u.id = ?4")
+    int updateUser( @Param("1") String password, @Param("2") UserClass userClass, @Param("3") String email, @Param("4") long id);
 }
