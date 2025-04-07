@@ -13,16 +13,18 @@ public class User {
     private long id;
 
     @Schema(description = "用户名",example = "admin",required = true)
+    @Column(unique = true,nullable = false)
     private String userName;
 
     @Schema(description = "密码",example = "123456",required = true)
+    @Column(nullable = false)
     private String password;
 
     @Schema(description = "用户类别",example = "0")
     private UserClass userClass = UserClass.Normal;
 
     @Schema(description = "邮箱",example = "admin@example.com")
-    private String email;
+    private String email = "";
 
     public long getId() {
         return id;
@@ -62,5 +64,15 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", userName='" + userName + '\'' +
+                ", password='" + password + '\'' +
+                ", userClass=" + userClass +
+                ", email='" + email + '\'' +
+                '}';
     }
 }

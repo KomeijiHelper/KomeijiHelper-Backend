@@ -1,8 +1,12 @@
 package komeiji.back.repository;
 
+import jakarta.transaction.Transactional;
 import komeiji.back.entity.UserClass;
 import org.springframework.data.jpa.repository.JpaRepository;
 import komeiji.back.entity.User;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.*;
 
 import java.util.List;
@@ -16,4 +20,9 @@ public interface UserDao extends JpaRepository<User,Long>{
     User findByUserNameAndPassword(String uname, String password);
     List<User> findAllByUserClass(UserClass userClass);
     List<User> findAll();
+
+    @Modifying
+    @Transactional
+    @Query("update User u set u.password = ?1,u.userClass = ?2,u.email = ?3 where u.id = ?4")
+    int updateUser( @Param("1") String password, @Param("2") UserClass userClass, @Param("3") String email, @Param("4") long id);
 }
