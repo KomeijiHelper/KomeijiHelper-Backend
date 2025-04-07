@@ -10,6 +10,7 @@ import komeiji.back.websocket.channel.events.handler.HandShakeCompleteEventHandl
 import komeiji.back.websocket.persistence.Conversation;
 import komeiji.back.websocket.persistence.ConversationManager;
 import komeiji.back.websocket.persistence.impl.MockRecordstorage;
+import komeiji.back.websocket.persistence.impl.RedisRecordstorage;
 import komeiji.back.websocket.protocol.ProtocolUtils;
 import komeiji.back.websocket.protocol.WebSocketFrameProtocol;
 import komeiji.back.websocket.session.OneWayChatSession;
@@ -33,7 +34,7 @@ public class WebSocketConnectHandler extends ChannelInboundHandlerAdapter {
         System.out.println("channelDisconnect from: " + session.getId());
         WebSocketServer.getWebSocketSingleServer().getSessionManager().removeSession(session);
         closePeerChannel(session.getId(),session.getTarget());
-        super.channelUnregistered(ctx);
+        super.channelInactive(ctx);
     }
 
 
@@ -70,7 +71,7 @@ public class WebSocketConnectHandler extends ChannelInboundHandlerAdapter {
             return;
         }
         Conversation conversation = WebSocketServer.getWebSocketSingleServer().
-                getConversationManager().newConversation(session.getId(),session.getTarget(),new MockRecordstorage());
+                getConversationManager().newConversation(session.getId(),session.getTarget(),new RedisRecordstorage());
         conversation.tryStart();
         ctx.channel().attr(Attributes.CONVERSATION).set(conversation);
     }

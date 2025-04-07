@@ -12,12 +12,16 @@ import jakarta.servlet.http.HttpSession;
 import komeiji.back.entity.UserClass;
 import komeiji.back.service.UserService;
 import komeiji.back.entity.User;
+import komeiji.back.utils.RedisUtils;
 import lombok.Getter;
 import lombok.Setter;
+import org.json.JSONObject;
 import org.springframework.web.bind.annotation.*;
 import komeiji.back.utils.Result;
 import jakarta.annotation.Resource;
-import java.io.IOException;
+
+import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,6 +39,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class UserController {
     @Resource
     private UserService userService;
+
+    @Resource
+    public RedisUtils redisUtils;
 
     public static HashMap<String,HttpSession> sessions = new HashMap<>();
 
@@ -54,7 +61,6 @@ public class UserController {
         if(loginResult!= null){
             session.setAttribute("LoginUser", loginUser.getUserName());
             session.setAttribute("Id", loginResult.getId());
-
             return Result.success(loginUser.getUserName(), "登录成功");
         }
         else{
@@ -90,7 +96,25 @@ public class UserController {
 
     @GetMapping("/test")
     @Operation(summary = "测试接口", description = "测试接口")
-    public String test() { return "test"; }
+    public String test() throws IOException {
+        List<Person> persons = new ArrayList<>();
+        persons.add(new Person("cjw", 25));
+        persons.add(new Person("lxy", 23));
+        persons.add(new Person("zxy", 22));
+        persons.add(new Person("zxy", 22));
+
+        for(int i = 0;i<persons.size();i++){
+            redisUtils.rpush("persons", persons.get(i));
+        }
+        Object cjw = redisUtils.lpop("persons");
+        System.out.println(cjw);
+        System.out.println(cjw.getClass());
+        OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream("E:\\coding\\workspace\\Test\\1.json"),"UTF-8");
+
+        return cjw.toString();
+
+    }
+
 
     @GetMapping("/getUserName")
     @Operation(summary = "获取当前登录用户的用户名", description = "获取当前登录用户的用户名")
@@ -213,3 +237,16 @@ public class UserController {
         return userService.getUserByName(userName.toString());
     }
 }
+
+ class Person{
+   String name;
+   int age;
+   public Person(){
+       this.name = "";
+       this.age = 0;
+   }
+   public Person(String name,int age){
+       this.name=name;
+       this.age=age;
+   }
+ }

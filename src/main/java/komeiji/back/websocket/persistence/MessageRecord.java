@@ -1,6 +1,7 @@
 package komeiji.back.websocket.persistence;
 
 import komeiji.back.websocket.message.Message;
+import komeiji.back.websocket.message.impl.TextMessage;
 import komeiji.back.websocket.session.SessionToken;
 
 public class MessageRecord {
@@ -12,7 +13,10 @@ public class MessageRecord {
     
     private MessageRecord(){}
 
-    public MessageRecord(Message msg) {
-
+    public MessageRecord(SessionToken token, long timestamp, String type, String data) {
+        this.token = token;
+        this.timestamp = timestamp;
+        this.type = type;
+        this.data = data;
     }
 }

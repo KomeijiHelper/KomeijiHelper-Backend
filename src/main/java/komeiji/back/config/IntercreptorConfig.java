@@ -16,6 +16,7 @@ public class IntercreptorConfig implements WebMvcConfigurer {
         List<String> excludeUrls = new ArrayList<>();
         excludeUrls.add("/**/login");
         excludeUrls.add("/**/logout");
+        excludeUrls.add("/**/test");
         excludeUrls.add("/**/register");
         excludeUrls.add("/swagger-ui/**");
         excludeUrls.add("/swagger-ui.html/**");

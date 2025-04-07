@@ -4,15 +4,19 @@ import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.handler.logging.LogLevel;
 import io.netty.util.concurrent.GlobalEventExecutor;
 
+import komeiji.back.utils.RedisUtils;
 import komeiji.back.websocket.WebSocketServer;
 import komeiji.back.websocket.message.fowardqueue.impl.CLMessageQueue;
 import komeiji.back.websocket.persistence.ConversationManager;
 import komeiji.back.websocket.session.SessionManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.redis.core.RedisTemplate;
 
 @SpringBootApplication
 public class BackApplication {
+
     public static void main(String[] args) {
         SpringApplication.run(BackApplication.class, args);
         WebSocketServer webSocketServer = WebSocketServer.getWebSocketSingleServer(LogLevel.INFO,8192,"/ws",
@@ -20,7 +24,6 @@ public class BackApplication {
                 new CLMessageQueue(),
                 new ConversationManager());
         webSocketServer.startServer(54950);
-
-
     }
 }
+

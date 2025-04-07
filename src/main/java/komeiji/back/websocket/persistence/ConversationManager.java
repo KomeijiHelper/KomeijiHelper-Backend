@@ -26,7 +26,7 @@ public class ConversationManager {
         return conversation;
     }
 
-    public void closeConversation(Conversation conversation) {
+    synchronized public void closeConversation(Conversation conversation) {
         UUID CID = conversation.getCID();
         // conversation has been close by the other channel or does not exist
         if (!conversations.containsKey(CID)) {

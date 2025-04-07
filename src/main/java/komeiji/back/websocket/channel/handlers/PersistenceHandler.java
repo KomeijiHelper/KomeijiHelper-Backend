@@ -11,7 +11,7 @@ import komeiji.back.websocket.persistence.MessageRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PersistenceHandler extends SimpleChannelInboundHandler<Message> {
+public class PersistenceHandler extends SimpleChannelInboundHandler<MessageRecord> {
     private static final Logger logger = LoggerFactory.getLogger(PersistenceHandler.class);
 
     private Conversation conversation = null;
@@ -38,10 +38,8 @@ public class PersistenceHandler extends SimpleChannelInboundHandler<Message> {
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, Message msg) throws Exception {
-//        System.out.println("Conversation of msg " + msg + " is " + conversation.getCID());
-        MessageRecord record = new MessageRecord(msg);
+    protected void channelRead0(ChannelHandlerContext ctx, MessageRecord record) throws Exception {
         conversation.storeRecord(record);
-        ctx.fireChannelRead(msg);
+        ctx.fireChannelRead(record);
     }
 }
