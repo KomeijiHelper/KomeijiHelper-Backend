@@ -10,6 +10,7 @@ import komeiji.back.websocket.message.fowardqueue.impl.CLMessageQueue;
 import komeiji.back.websocket.persistence.ConversationManager;
 import komeiji.back.websocket.session.SessionManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -17,9 +18,12 @@ import org.springframework.data.redis.core.RedisTemplate;
 @SpringBootApplication
 public class BackApplication {
 
+    @Value("${useSsl}")
+    private static boolean ssl;
+
     public static void main(String[] args) {
         SpringApplication.run(BackApplication.class, args);
-        WebSocketServer webSocketServer = WebSocketServer.getWebSocketSingleServer(LogLevel.INFO,8192,"/ws",
+        WebSocketServer webSocketServer = WebSocketServer.getWebSocketSingleServer(ssl,LogLevel.INFO,8192,"/ws",
                 new SessionManager(new DefaultChannelGroup(GlobalEventExecutor.INSTANCE)),
                 new CLMessageQueue(),
                 new ConversationManager());
