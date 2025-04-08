@@ -1,0 +1,36 @@
+server:
+  port: 8081
+  servlet:
+    session:
+      cookie:
+        secure: true
+        SameSite: None
+    encoding:
+      charset: utf-8
+      force: true
+      enabled: true
+spring:
+  application:
+    name: back
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/komeiji?serverTimezone=UTC
+    username: root
+    password: 2002madlife
+  jpa:
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+  mvc:
+    path match:
+      matching-strategy: ant_path_matcher
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+
+useSsl: true
+swagger:
