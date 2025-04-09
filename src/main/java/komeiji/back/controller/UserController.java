@@ -19,11 +19,11 @@ import org.json.JSONObject;
 import org.springframework.web.bind.annotation.*;
 import komeiji.back.utils.Result;
 import jakarta.annotation.Resource;
+import komeiji.back.utils.ObjectUtils;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.security.NoSuchAlgorithmException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -53,7 +53,7 @@ public class UserController {
                     @ApiResponse(responseCode = "402", description = "账号或密码错误", content = @Content(schema = @Schema(implementation = Result.class)))
             }
     )
-    public Result<String> loginController(@RequestBody User loginUser, HttpSession session, HttpServletResponse response) throws IOException {
+    public Result<String> loginController(@RequestBody User loginUser, HttpSession session, HttpServletResponse response) throws IOException, NoSuchAlgorithmException {
         System.out.println("用户名:"+loginUser.getUserName()+loginUser.getPassword());
 
         User loginResult = userService.loginService(loginUser.getUserName(), loginUser.getPassword());
@@ -61,6 +61,7 @@ public class UserController {
         if(loginResult!= null){
             session.setAttribute("LoginUser", loginUser.getUserName());
             session.setAttribute("Id", loginResult.getId());
+
             return Result.success(loginUser.getUserName(), "登录成功");
         }
         else{
@@ -76,7 +77,7 @@ public class UserController {
                     @ApiResponse(responseCode = "456", description = "注册失败", content = @Content(schema = @Schema(implementation = Result.class)))
             }
     )
-    public Result<String> registerController(@RequestBody User newUser, HttpSession session, HttpServletResponse response) throws IOException {
+    public Result<String> registerController(@RequestBody User newUser, HttpSession session, HttpServletResponse response) throws IOException, NoSuchAlgorithmException {
         Boolean registerResult = userService.registerService(newUser);
         if (registerResult) {
             session.setAttribute("LoginUser", newUser.getUserName());
@@ -96,22 +97,19 @@ public class UserController {
 
     @GetMapping("/test")
     @Operation(summary = "测试接口", description = "测试接口")
-    public String test() throws IOException {
-        List<Person> persons = new ArrayList<>();
-        persons.add(new Person("cjw", 25));
-        persons.add(new Person("lxy", 23));
-        persons.add(new Person("zxy", 22));
-        persons.add(new Person("zxy", 22));
+    public String test() throws IOException, IllegalAccessException {
+        String a = "abdfda";
+        String b = "jkfadjlk";
 
-        for(int i = 0;i<persons.size();i++){
-            redisUtils.rpush("persons", persons.get(i));
-        }
-        Object cjw = redisUtils.lpop("persons");
-        System.out.println(cjw);
-        System.out.println(cjw.getClass());
-        OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream("E:\\coding\\workspace\\Test\\1.json"),"UTF-8");
+        Object obj = Map.of("a",a,"b",b);
+        redisUtils.addHash("cjw","jjj",obj);
 
-        return cjw.toString();
+       Object result =redisUtils.getHash("cjw","jjj");
+
+        System.out.println(result);
+        Map<String,Object> map = (Map<String, Object>) result;
+
+        return result.toString();
 
     }
 
@@ -238,15 +236,4 @@ public class UserController {
     }
 }
 
- class Person{
-   String name;
-   int age;
-   public Person(){
-       this.name = "";
-       this.age = 0;
-   }
-   public Person(String name,int age){
-       this.name=name;
-       this.age=age;
-   }
- }
+

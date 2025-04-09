@@ -26,6 +26,8 @@ public class User {
     @Schema(description = "邮箱",example = "admin@example.com")
     private String email = "";
 
+    private String nickName = "";
+
     public long getId() {
         return id;
     }

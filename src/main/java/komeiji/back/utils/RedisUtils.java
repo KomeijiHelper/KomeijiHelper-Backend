@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
+import java.util.Set;
 
 /**
  * <p>
@@ -35,6 +36,8 @@ public class RedisUtils {
 
 
     // 设置键值对
+
+
     public void set(String key, Object value) {
         redisTemplate.opsForValue().set(key, value);
     }
@@ -116,6 +119,41 @@ public class RedisUtils {
     public Long getListSize(String key){
         return redisTemplate.opsForList().size(key);
     }
+
+    public Long addSet(String Key,Object value){
+        return redisTemplate.opsForSet().add(Key,value);
+    }
+    public Long removeSet(String Key,Object value)
+    {
+        return redisTemplate.opsForSet().remove(Key,value);
+    }
+    public Long getSetSize(String Key)
+    {
+        return redisTemplate.opsForSet().size(Key);
+    }
+    public Set getSetMembers(String Key)
+    {
+        return redisTemplate.opsForSet().members(Key);
+    }
+    public Boolean isMember(String Key,Object value) {
+        return redisTemplate.opsForSet().isMember(Key, value);
+    }
+
+    public void addHash(String table,String key,Object value){
+         redisTemplate.opsForHash().put(table,key,value);
+    }
+    public Long deleteHash(String table,String key){
+        return redisTemplate.opsForHash().delete(table,key);
+    }
+    public Boolean hasHash(String table,String key){
+        return redisTemplate.opsForHash().hasKey(table,key);
+    }
+    public Object getHash(String table,String key){
+        return redisTemplate.opsForHash().get(table,key);
+    }
+
+
+
 
 }
 
