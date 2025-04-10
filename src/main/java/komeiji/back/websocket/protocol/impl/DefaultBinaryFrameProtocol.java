@@ -1,12 +1,14 @@
 package komeiji.back.websocket.protocol.impl;
 
 
-import komeiji.back.websocket.protocol.BinaryFrameTProtocol;
+import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
+import komeiji.back.websocket.message.Message;
+import komeiji.back.websocket.protocol.BinaryFrameProtocol;
 import komeiji.back.websocket.session.Session;
 
-public class DefaultBinaryFrameProtocol extends BinaryFrameTProtocol<Object> {
+public class DefaultBinaryFrameProtocol extends BinaryFrameProtocol<Message> {
     @Override
-    public Object transform(Object data, Session session) {
+    protected Message frameTransform(BinaryWebSocketFrame frame, Session session) {
         return null;
     }
 }
