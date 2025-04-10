@@ -26,6 +26,27 @@ public class User {
     @Schema(description = "邮箱",example = "admin@example.com")
     private String email = "";
 
+    @Schema(description = "用户昵称")
+    private String nickName = ""; //用户昵称
+
+    public String getQualification() {
+        return qualification;
+    }
+
+    public void setQualification(String qualification) {
+        this.qualification = qualification;
+    }
+
+    private String qualification = "";
+
+    public String getNickName() {
+        return nickName;
+    }
+
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
+    }
+
     public long getId() {
         return id;
     }

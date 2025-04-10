@@ -10,8 +10,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import komeiji.back.entity.UserClass;
+import komeiji.back.repository.UserDao;
 import komeiji.back.service.UserService;
 import komeiji.back.entity.User;
+import komeiji.back.utils.RedisTable;
 import komeiji.back.utils.RedisUtils;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,11 +21,11 @@ import org.json.JSONObject;
 import org.springframework.web.bind.annotation.*;
 import komeiji.back.utils.Result;
 import jakarta.annotation.Resource;
+import komeiji.back.utils.ObjectUtils;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.security.NoSuchAlgorithmException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -43,6 +45,9 @@ public class UserController {
     @Resource
     public RedisUtils redisUtils;
 
+    @Resource
+    UserDao userdao;
+
     public static HashMap<String,HttpSession> sessions = new HashMap<>();
 
     @PostMapping("/login")
@@ -51,16 +56,24 @@ public class UserController {
             value = {
                     @ApiResponse(responseCode = "200", description = "登录成功", content = @Content(schema = @Schema(implementation = Result.class))),
                     @ApiResponse(responseCode = "402", description = "账号或密码错误", content = @Content(schema = @Schema(implementation = Result.class)))
+
             }
     )
-    public Result<String> loginController(@RequestBody User loginUser, HttpSession session, HttpServletResponse response) throws IOException {
+    public Result<String> loginController(@RequestBody User loginUser, HttpSession session, HttpServletResponse response) throws IOException, NoSuchAlgorithmException {
         System.out.println("用户名:"+loginUser.getUserName()+loginUser.getPassword());
 
         User loginResult = userService.loginService(loginUser.getUserName(), loginUser.getPassword());
 
         if(loginResult!= null){
+            if(redisUtils.isMember(RedisTable.loginUser, loginUser.getUserName())){
+                return Result.error(409,"该用户已登录",response);
+            }
             session.setAttribute("LoginUser", loginUser.getUserName());
             session.setAttribute("Id", loginResult.getId());
+
+            //NOTICE 确保只有一个账户登录
+            redisUtils.addSet(RedisTable.loginUser, loginUser.getUserName());
+
             return Result.success(loginUser.getUserName(), "登录成功");
         }
         else{
@@ -76,11 +89,21 @@ public class UserController {
                     @ApiResponse(responseCode = "456", description = "注册失败", content = @Content(schema = @Schema(implementation = Result.class)))
             }
     )
-    public Result<String> registerController(@RequestBody User newUser, HttpSession session, HttpServletResponse response) throws IOException {
+    public Result<String> registerController(@RequestBody User newUser, HttpSession session, HttpServletResponse response) throws IOException, NoSuchAlgorithmException {
+        if(!userService.userNameIsLegal(newUser.getUserName())){
+            System.out.println("注册用户名:"+newUser.getUserName());
+            return Result.error(457,"用户名不合法",response);
+        }
         Boolean registerResult = userService.registerService(newUser);
         if (registerResult) {
-            session.setAttribute("LoginUser", newUser.getUserName());
-            session.setAttribute("Id", newUser.getId());
+//            session.setAttribute("LoginUser", newUser.getUserName());
+//            session.setAttribute("Id", newUser.getId());
+            if(newUser.getQualification().length() != 0){
+                if(userdao.findByQualification(newUser.getQualification()) != null){
+                    return Result.error(460,"资质证书重复",response);
+                }
+            }
+
             return Result.success(newUser.getUserName(), "注册成功");
         } else {
             return Result.error(456, "注册失败", response);
@@ -90,28 +113,28 @@ public class UserController {
     @GetMapping("/logout")
     @Operation(summary = "用户登出", description = "用户登出，清除session")
     public void loginOut(HttpSession session) {
+        redisUtils.removeSet(RedisTable.loginUser, session.getAttribute("LoginUser"));
         session.removeAttribute("LoginUser");
+        session.removeAttribute("Id");
         session.invalidate();
+
     }
 
     @GetMapping("/test")
     @Operation(summary = "测试接口", description = "测试接口")
-    public String test() throws IOException {
-        List<Person> persons = new ArrayList<>();
-        persons.add(new Person("cjw", 25));
-        persons.add(new Person("lxy", 23));
-        persons.add(new Person("zxy", 22));
-        persons.add(new Person("zxy", 22));
+    public String test() throws IOException, IllegalAccessException {
+        String a = "abdfda";
+        String b = "jkfadjlk";
 
-        for(int i = 0;i<persons.size();i++){
-            redisUtils.rpush("persons", persons.get(i));
-        }
-        Object cjw = redisUtils.lpop("persons");
-        System.out.println(cjw);
-        System.out.println(cjw.getClass());
-        OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream("E:\\coding\\workspace\\Test\\1.json"),"UTF-8");
+        Object obj = Map.of("a",a,"b",b);
+        redisUtils.addHash("cjw","jjj",obj);
 
-        return cjw.toString();
+       Object result =redisUtils.getHash("cjw","jjj");
+
+        System.out.println(result);
+        Map<String,Object> map = (Map<String, Object>) result;
+
+        return result.toString();
 
     }
 
@@ -147,11 +170,11 @@ public class UserController {
             exclusionStrategy = new ExclusionStrategy() {
                 @Override
                 public boolean shouldSkipField(FieldAttributes f) {
-                    String filedName = f.getName();
-                    return filedName.equals("password")
-                            || filedName.equals("id")
-                            || filedName.equals("userClass")
-                            || filedName.equals("email");
+                    String fieldName = f.getName();
+                    return fieldName.equals("password")
+                            || fieldName.equals("id")
+                            || fieldName.equals("userClass")
+                            || fieldName.equals("email");
                 }
 
                 @Override
@@ -163,7 +186,9 @@ public class UserController {
             exclusionStrategy = new ExclusionStrategy() {
                 @Override
                 public boolean shouldSkipField(FieldAttributes f) {
-                    return false;
+                    String fieldName = f.getName();
+                    return fieldName.equals("password");
+
                 }
 
                 @Override
@@ -238,15 +263,4 @@ public class UserController {
     }
 }
 
- class Person{
-   String name;
-   int age;
-   public Person(){
-       this.name = "";
-       this.age = 0;
-   }
-   public Person(String name,int age){
-       this.name=name;
-       this.age=age;
-   }
- }
+
