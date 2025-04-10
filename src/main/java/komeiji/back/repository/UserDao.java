@@ -20,9 +20,20 @@ public interface UserDao extends JpaRepository<User,Long>{
     User findByUserNameAndPassword(String uname, String password);
     List<User> findAllByUserClass(UserClass userClass);
     List<User> findAll();
+    User findByQualification(String qualification);
 
     @Modifying
     @Transactional
-    @Query("update User u set u.password = ?1,u.userClass = ?2,u.email = ?3 where u.id = ?4")
-    int updateUser( @Param("1") String password, @Param("2") UserClass userClass, @Param("3") String email, @Param("4") long id);
+    @Query("update User u set u.userClass = ?1,u.email = ?2 where u.id = ?3")
+    int updateUser( @Param("1") UserClass userClass, @Param("2") String email, @Param("3") String nickName, @Param("4") long id);
+
+    @Modifying
+    @Transactional
+    @Query("update User u set u.password = ?1 where u.id = ?2")
+    int updatePassword(@Param("1")  String password, @Param("2") long id);
+
+    @Modifying
+    @Transactional
+    @Query("update User u set u.nickName = ?1, u.email =?2 where u.id =?3")
+    int updateUserInfo(@Param("1") String nickName, @Param("2") String email, @Param("3") long id);
 }

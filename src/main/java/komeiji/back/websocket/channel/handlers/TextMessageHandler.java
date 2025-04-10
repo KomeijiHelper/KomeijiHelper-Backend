@@ -22,67 +22,10 @@ public class TextMessageHandler extends SimpleChannelInboundHandler<TextMessage>
     @Override
     protected void channelRead0(ChannelHandlerContext ctx,TextMessage msg) throws Exception {
         // NOTE: message has been parsed by Protocol here
+        logger.debug("handler text message: {}",msg);
         ctx.fireUserEventTriggered(new MessageForwardEvent(msg));
         MessageRecord msgRecord = new MessageRecord(msg.getFrom(),msg.getTimestamp(),"text", msg.getData());
         ctx.fireChannelRead(msgRecord);
-//        String text = msg.getData();
-//        System.out.println("服务器收到消息 " + text);
-//
-//        JsonObject jsonObject = JsonParser.parseString(text).getAsJsonObject();
-//        String type = jsonObject.get("type").getAsString();
-//        String content = jsonObject.get("content").getAsString();
-//
-//        Session session = ctx.channel().attr(Attributes.SESSION).get();
-//        MessageType messageType = MessageType.fromString(type);
-//
-//        switch (messageType) {
-//            case CONSULTANT_REQUEST -> {
-//                // 转发请求给咨询师
-//                SessionToken consultantToken = new SessionToken(content);
-//                Session consultantSession = WebSocketServer.getWebSocketSingleServer()
-//                    .getSessionManager()
-//                    .findChatSession(consultantToken);
-//
-//                if (consultantSession != null) {
-//                    TextMessage requestMessage = new TextMessage(
-//                        session.getId(),
-//                        consultantToken,
-//                        "新的咨询请求"
-//                    );
-//                    ctx.fireUserEventTriggered(new MessageForwardEvent(requestMessage));
-//                }
-//            }
-//            case CONSULTANT_ACCEPTED, CONSULTANT_REJECTED -> {
-//                // 转发响应给用户
-//                Session userSession = WebSocketServer.getWebSocketSingleServer()
-//                    .getSessionManager()
-//                    .findChatSession(session.getTarget());
-//
-//                if (userSession != null) {
-//                    TextMessage responseMessage = new TextMessage(
-//                        session.getId(),
-//                        userSession.getId(),
-//                        messageType == MessageType.CONSULTANT_ACCEPTED ? "咨询师已接受请求" : "咨询师已拒绝请求"
-//                    );
-//                    ctx.fireUserEventTriggered(new MessageForwardEvent(responseMessage));
-//                }
-//            }
-//            default -> {
-//                // 处理普通文本消息
-//                Session targetSession = WebSocketServer.getWebSocketSingleServer()
-//                    .getSessionManager()
-//                    .findChatSession(session.getTarget());
-//
-//                if (targetSession != null) {
-//                    TextMessage textMessage = new TextMessage(
-//                        session.getId(),
-//                        targetSession.getId(),
-//                        content
-//                    );
-//                    ctx.fireUserEventTriggered(new MessageForwardEvent(textMessage));
-//                }
-//            }
-//        }
     }
 
     @Override
@@ -98,7 +41,7 @@ public class TextMessageHandler extends SimpleChannelInboundHandler<TextMessage>
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        System.out.println("异常发生 " + cause.getMessage() + TextMessageHandler.class.getName());
+        logger.warn("异常发生 {} in {} ", cause.getMessage(), TextMessageHandler.class.getName());
         super.exceptionCaught(ctx, cause);
     }
 }

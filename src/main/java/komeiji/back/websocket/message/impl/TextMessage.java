@@ -14,21 +14,28 @@ import java.util.Map;
 public class TextMessage extends Message {
     protected static Gson gson = new Gson();
     protected String data;
+    protected String type = "text";
 
     public TextMessage(SessionToken from, SessionToken to, long timestamp) {
         super(from,to, timestamp);
+        this.type = type;
     }
 
 
     @Override
     public TextWebSocketFrame
     messageDecode() {
-        return new TextWebSocketFrame(gson.toJson(Map.of("type","text","content", data, "timestamp", getTimestamp())));
+        return new TextWebSocketFrame(gson.toJson(Map.of("type",type,"content", data, "timestamp", getTimestamp())));
     }
 
     public TextMessage(SessionToken from, SessionToken to, String data, long timestamp) {
         this(from, to, timestamp);
         this.data = data;
+    }
+
+    public TextMessage(String type,SessionToken from, SessionToken to, String data, long timestamp) {
+        this(from, to, data,timestamp);
+        this.type = type;
     }
 
 
