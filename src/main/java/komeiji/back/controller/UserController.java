@@ -122,19 +122,17 @@ public class UserController {
 
     @GetMapping("/test")
     @Operation(summary = "测试接口", description = "测试接口")
-    public String test() throws IOException, IllegalAccessException {
+    public Object test() throws IOException, IllegalAccessException {
         String a = "abdfda";
         String b = "jkfadjlk";
 
         Object obj = Map.of("a",a,"b",b);
         redisUtils.addHash("cjw","jjj",obj);
+        redisUtils.addHash("cjw","kkk","kk");
 
-       Object result =redisUtils.getHash("cjw","jjj");
+        Set<Object> result = redisUtils.getHashKeys("cjw");
 
-        System.out.println(result);
-        Map<String,Object> map = (Map<String, Object>) result;
-
-        return result.toString();
+        return result;
 
     }
 
