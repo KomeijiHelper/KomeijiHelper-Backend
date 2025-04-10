@@ -40,7 +40,7 @@ public class DefaultTextFrameProtocol extends TextFrameProtocol<Message> {
         System.out.println("DefaultTextFrameProtocol parse data into" + text);
 
         MessageBody body = MessageBody.buildMessageBody(text);
-
+        System.out.println("text message content :"+ body.content);
         return MessageFactory.newTextMessage(body.type, session.getId(), session.getTarget(), body.content, body.timestamp);
     }
 

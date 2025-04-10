@@ -71,6 +71,7 @@ public class UserController {
             //NOTICE 确保只有一个账户登录
             redisUtils.addSet(RedisTable.loginUser, loginUser.getUserName());
 
+
             return Result.success(loginUser.getUserName(), "登录成功");
         }
         else{

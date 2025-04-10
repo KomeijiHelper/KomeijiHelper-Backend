@@ -15,12 +15,15 @@ public class LoginHandlerInterceptor implements HandlerInterceptor {
 
         Object userName = request.getSession().getAttribute("LoginUser");
 
+        System.out.println(userName);
+
         //拦截器取到请求先进行判断，如果是OPTIONS请求，则放行
         if("OPTIONS".equalsIgnoreCase(request.getMethod())) {
         	return true;
         }
 
         if (userName == null) {  //没有登陆
+            System.out.println("拦截");
             //重置response
             response.reset();
             response.setCharacterEncoding("UTF-8");
