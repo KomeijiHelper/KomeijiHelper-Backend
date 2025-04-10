@@ -13,15 +13,12 @@ import komeiji.back.entity.UserClass;
 import komeiji.back.repository.UserDao;
 import komeiji.back.service.UserService;
 import komeiji.back.entity.User;
-import komeiji.back.utils.RedisTable;
-import komeiji.back.utils.RedisUtils;
+import komeiji.back.utils.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.json.JSONObject;
 import org.springframework.web.bind.annotation.*;
-import komeiji.back.utils.Result;
 import jakarta.annotation.Resource;
-import komeiji.back.utils.ObjectUtils;
 
 import java.io.*;
 import java.security.NoSuchAlgorithmException;
@@ -122,17 +119,19 @@ public class UserController {
 
     @GetMapping("/test")
     @Operation(summary = "测试接口", description = "测试接口")
-    public Object test() throws IOException, IllegalAccessException {
+    public String test() throws IOException, IllegalAccessException {
         String a = "abdfda";
         String b = "jkfadjlk";
 
         Object obj = Map.of("a",a,"b",b);
         redisUtils.addHash("cjw","jjj",obj);
-        redisUtils.addHash("cjw","kkk","kk");
 
-        Set<Object> result = redisUtils.getHashKeys("cjw");
+       Object result =redisUtils.getHash("cjw","jjj");
 
-        return result;
+        System.out.println(result);
+        Map<String,Object> map = (Map<String, Object>) result;
+
+        return result.toString();
 
     }
 
@@ -214,13 +213,22 @@ public class UserController {
 
     @PostMapping("/changeInfo")
     @Operation(summary = "根据传入的User数据修改用户信息", description = "根据传入的User数据修改用户信息,manager权限可以任意修改，其他用户只能修改自己的信息")
-    public Result<String> changeInfo(@RequestBody User user,HttpSession session) {
+    public Result<String> changeInfo(@RequestBody User user,HttpSession session) throws NoSuchAlgorithmException {
         System.out.println(user.toString());
-        User loginUser = userService.getUserById((long) session.getAttribute("Id"));
+        if (user.getPassword() == null || user.getPassword().isEmpty()) {
+            User loginUser = userService.getUserById((long) session.getAttribute("Id"));
 
-        if (loginUser.getUserClass() != UserClass.Manager) {
-            if (user.getId() != (long) session.getAttribute("Id")) {
-                return Result.error("-1", "权限不足，不能修改其他用户信息");
+            if (loginUser.getUserClass() != UserClass.Manager) {
+                if (user.getId() != (long) session.getAttribute("Id")) {
+                    return Result.error("-1", "权限不足，不能修改其他用户信息");
+                } else {
+                    int result = userService.updateUser(user);
+                    if (result == 0) {
+                        return Result.error("-2", "修改失败");
+                    } else {
+                        return Result.success("修改成功");
+                    }
+                }
             } else {
                 int result = userService.updateUser(user);
                 if (result == 0) {
@@ -228,16 +236,30 @@ public class UserController {
                 } else {
                     return Result.success("修改成功");
                 }
-
             }
         } else {
-            int result = userService.updateUser(user);
-            if (result == 0) {
-                return Result.error("-2", "修改失败");
+            User loginUser = userService.getUserById((long) session.getAttribute("Id"));
+            if (loginUser.getUserClass() != UserClass.Manager) {
+                if (user.getId() != (long) session.getAttribute("Id")) {
+                    return Result.error("-1", "权限不足，不能修改其他用户信息");
+                } else {
+                    int result = userService.updatePassword(user);
+                    if (result == 0) {
+                        return Result.error("-2", "修改失败");
+                    } else {
+                        return Result.success("修改成功");
+                    }
+                }
             } else {
-                return Result.success("修改成功");
+                int result = userService.updatePassword(user);
+                if (result == 0) {
+                    return Result.error("-2", "修改失败");
+                } else {
+                    return Result.success("修改成功");
+                }
             }
         }
+
     }
 
 

@@ -2,7 +2,11 @@ package komeiji.back.entity;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 @Table(name = "user")
 @Entity
 @Schema(name = "User", description = "用户实体类")
@@ -29,63 +33,7 @@ public class User {
     @Schema(description = "用户昵称")
     private String nickName = ""; //用户昵称
 
-    public String getQualification() {
-        return qualification;
-    }
-
-    public void setQualification(String qualification) {
-        this.qualification = qualification;
-    }
-
     private String qualification = "";
-
-    public String getNickName() {
-        return nickName;
-    }
-
-    public void setNickName(String nickName) {
-        this.nickName = nickName;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String uname) {
-        this.userName = uname;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public UserClass getUserClass() {
-        return userClass;
-    }
-
-    public void setUserClass(UserClass userClass) {
-        this.userClass = userClass;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
 
     public String toString() {
         return "User{" +
