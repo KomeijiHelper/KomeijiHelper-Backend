@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -18,6 +20,13 @@ public class UserServiceImpl implements UserService {
     private UserDao userDao;
 
 
+    @Override
+    public Boolean userNameIsLegal(String username) {
+       String USERNAME_PATTERN ="^[a-zA-Z][a-zA-Z0-9_]{5,19}$";
+        Pattern pattern = Pattern.compile(USERNAME_PATTERN);
+        Matcher matcher = pattern.matcher(username);
+        return matcher.matches();
+    }
 
     @Override
     public User loginService(String userName, String password) throws NoSuchAlgorithmException {
@@ -36,6 +45,9 @@ public class UserServiceImpl implements UserService {
         }
         else {
             user.setPassword(MD5Utils.toMD5(user.getPassword()));
+            if(user.getNickName().length() == 0 ){
+                user.setNickName("User:"+ user.getUserName());
+            }
             userDao.save(user);
             return true;
         }

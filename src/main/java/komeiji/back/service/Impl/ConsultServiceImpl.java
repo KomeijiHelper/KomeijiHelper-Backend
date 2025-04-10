@@ -41,15 +41,14 @@ public class ConsultServiceImpl implements ConsultService {
 
     @Override
     public void conenctRequest_Service(SessionToken patient_sessiontoken, SessionToken consultant_sessiontoken, String patient_name, String consultant_name) throws UnsupportedEncodingException, NoSuchAlgorithmException {
-        // TODO 向patient和consultant发送websocket消息，类型为MessageType.CONNECT 需要明确to_patient to_consultant的具体内容
-        //TODO 用MD5算法将UID 进行转换 并将转换后的数据通过 to_patient to_consultant 发送给patient和consultant
-
-
+        // NOTICE 向patient和consultant发送websocket消息，类型为MessageType.CONNECT 需要明确to_patient to_consultant的具体内容
+        //NOTICE 用MD5算法将UID 进行转换 并将转换后的数据通过 to_patient to_consultant 发送给patient和consultant
         //年月日时分秒
         //1
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter formatter2 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String time = now.format(formatter2);
+        System.out.println("format time :"+time);
 
         MessageDigest md = MessageDigest.getInstance("MD5");
 
@@ -59,9 +58,10 @@ public class ConsultServiceImpl implements ConsultService {
         String consultant_md = HexFormat.of().formatHex(md.digest());
 
         String patient_token = patient_md+time;
-        String consultant_token = consultant_md+patient_md;
+        String consultant_token = consultant_md+time;
 
         StoreChatRecord(patient_token,consultant_token,consultant_name,patient_name,time);
+        // patient和consultant的sessiontoken为userName加密后与timeStamp拼接而来
 
         String to_patient = gson.toJson(Map.of("from",patient_token,"to",consultant_token));
         String to_consultant = gson.toJson(Map.of("from",consultant_token,"to",patient_token));
@@ -89,11 +89,12 @@ public class ConsultServiceImpl implements ConsultService {
         redisUtils.addHash(RedisTable.UserToSession,patient_name,CID.toString());
         redisUtils.addHash(RedisTable.UserToSession,consultant_name,CID.toString());
 
-        //TODO 在websocket连接断开后 去除对应Table中的内容
+        //TODO 在websocket连接断开后 去除对应RedisTable中的内容
 
         //NOTICE 在数据库中存储对应索引
         User consultant = userDao.findByUserName(consultant_name);
-        chatRecordDao.save(new ChatRecord(CID.toString(),patient_name,consultant_name,consultant.getUserClass().getCode(),time));
+        chatRecordDao.save(new ChatRecord(CID.toString(),patient_name,consultant_name,consultant.getUserClass().getCode(),time,"chat/"+CID.toString()));
+
     }
 
 

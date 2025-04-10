@@ -6,7 +6,7 @@ import jakarta.persistence.Id;
 @Entity
 public class ChatRecord {
     @Id
-    String id;
+    String id;  //由每一次绘画的UUID决定
 
     String patientName;
     String consultantName;
@@ -35,12 +35,13 @@ public class ChatRecord {
         this.filePath = filePath;
     }
 
-    public ChatRecord(String id, String patientName, String consultantName, int consultantClass, String timeStamp) {
+    public ChatRecord(String id, String patientName, String consultantName, int consultantClass, String timeStamp,String filePath) {
         this.id = id;
         this.patientName = patientName;
         this.consultantName = consultantName;
         this.consultantClass = consultantClass;
         this.timeStamp = timeStamp;
+        this.filePath = filePath;
     }
 
     public ChatRecord() {

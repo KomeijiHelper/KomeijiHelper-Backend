@@ -14,4 +14,5 @@ public interface UserService {
     List<User> getAllUsers();
     int updateUser(User user);
     User getUserById(long id);
+    Boolean userNameIsLegal(String username);
 }

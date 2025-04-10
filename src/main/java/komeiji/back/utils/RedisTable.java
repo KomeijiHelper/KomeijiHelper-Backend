@@ -1,6 +1,7 @@
 package komeiji.back.utils;
 
 public class RedisTable {
+    public static final String loginUser = "loginUser";
     public static final String onlineNormal = "onlineNormal";  //hash
     public static final String onlineConsultant = "onlineConsultant"; //hash
     public static final String onlineSupervisor = "onlineSupervisor"; //hash
@@ -8,9 +9,21 @@ public class RedisTable {
     public static final String SessionToUser = "SessionToUser";
     public static final String UserToSession = "UserToSession";
 
-    private final RedisUtils redisUtils = BeanUtils.getBean(RedisUtils.class);
+    private static final RedisUtils redisUtils = BeanUtils.getBean(RedisUtils.class);
 
-    public void initRedisTable(){
+    public static void Init(){
+        redisUtils.delete(loginUser);
+        redisUtils.delete(onlineNormal);
+        redisUtils.delete(onlineConsultant);
+        redisUtils.delete(onlineSupervisor);
+        redisUtils.delete(SessionToUser);
+        redisUtils.delete(UserToSession);
+
+        initRedisHashTable();
+        initRedisSetTable();
+    }
+
+    public static void initRedisHashTable(){
         if(!redisUtils.hasKey(onlineNormal)){
             redisUtils.addHash(onlineNormal,"-1",-1);
         }
@@ -25,6 +38,12 @@ public class RedisTable {
         }
         if(!redisUtils.hasKey(UserToSession)){
             redisUtils.addHash(UserToSession,"-1",-1);
+        }
+    }
+
+    public static void initRedisSetTable(){
+        if(!redisUtils.hasKey(loginUser)){
+            redisUtils.addSet("loginUser","-1");
         }
     }
 
