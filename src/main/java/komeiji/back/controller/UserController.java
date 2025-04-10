@@ -212,9 +212,9 @@ public class UserController {
     }
 
 
-    @PostMapping("/changeInfo")
+    @PostMapping("/changeUser")
     @Operation(summary = "根据传入的User数据修改用户信息", description = "根据传入的User数据修改用户信息,manager权限可以任意修改，其他用户只能修改自己的信息")
-    public Result<String> changeInfo(@RequestBody User user,HttpSession session) throws NoSuchAlgorithmException {
+    public Result<String> changeUser(@RequestBody User user,HttpSession session) throws NoSuchAlgorithmException {
         System.out.println(user.toString());
         User loginUser = userService.getUserById((long) session.getAttribute("Id"));
         if (loginUser.getUserClass() != UserClass.Manager) {
@@ -266,6 +266,19 @@ public class UserController {
             return Result.success("修改成功");
         }
     }
+
+    @PostMapping("/changeUserInfo")
+    public Result<String> changeUserInfo(@RequestBody User user, HttpSession session) throws NoSuchAlgorithmException {
+        User loginUser = userService.getUserById((long) session.getAttribute("Id"));
+        if (loginUser.getId() != (long) session.getAttribute("Id")) { return Result.error("-1", "用户不对应");}
+        int result = userService.updateUserInfo(user);
+        if (result == 0) {
+            return Result.error("-2", "修改失败");
+        } else {
+            return Result.success("保存成功");
+        }
+    }
+
     @Setter
     @Getter
     @Schema(description = "用户类别请求参数")
