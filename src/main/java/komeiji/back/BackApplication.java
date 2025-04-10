@@ -23,7 +23,7 @@ public class BackApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(BackApplication.class, args);
-        WebSocketServer webSocketServer = WebSocketServer.getWebSocketSingleServer(ssl,LogLevel.INFO,8192,"/ws",
+        WebSocketServer webSocketServer = WebSocketServer.getWebSocketSingleServer(ssl,LogLevel.INFO,1048576*16,"/ws",
                 new SessionManager(new DefaultChannelGroup(GlobalEventExecutor.INSTANCE)),
                 new CLMessageQueue(),
                 new ConversationManager());

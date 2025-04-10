@@ -13,14 +13,13 @@ public class BinaryMessageHandler extends SimpleChannelInboundHandler<BinaryMess
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, BinaryMessage msg) throws Exception {
 
-        logger.debug("handler text message: {}",msg);
+        logger.debug("handler binary message: {}",msg);
         ctx.fireUserEventTriggered(new MessageForwardEvent(msg));
-        // TODO: build messageRecord
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        System.out.println("异常发生 " + cause.getMessage() + BinaryMessageHandler.class.getName());
+        logger.warn("异常发生 {} in {} ", cause.getMessage(), BinaryMessageHandler.class.getName());
         super.exceptionCaught(ctx, cause);
     }
 }

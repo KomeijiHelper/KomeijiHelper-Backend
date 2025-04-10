@@ -6,6 +6,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
+import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolConfig;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
@@ -110,7 +111,12 @@ public class WebSocketServer {
                             pipeline.addLast(new ChunkedWriteHandler());
                             pipeline.addLast(new HttpObjectAggregator(httpMaxContentLength));
 
-                            pipeline.addLast(new WebSocketServerProtocolHandler(url,true));
+                            pipeline.addLast(new WebSocketServerProtocolHandler(
+                                    WebSocketServerProtocolConfig.newBuilder()
+                                            .websocketPath(url)
+                                            .checkStartsWith(true)
+                                            .maxFramePayloadLength(httpMaxContentLength)
+                                            .build()));
 
                             pipeline.addLast(new WebSocketConnectHandler());
                             pipeline.addLast(new FrameProtocolHandler());
