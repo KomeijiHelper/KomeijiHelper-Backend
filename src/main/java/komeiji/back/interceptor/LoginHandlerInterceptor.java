@@ -12,7 +12,7 @@ public class LoginHandlerInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         //登陆成功之后应该有用户的session
-        System.out.println(request.getSession().getId());
+
         Object userName = request.getSession().getAttribute("LoginUser");
 
         System.out.println(userName);

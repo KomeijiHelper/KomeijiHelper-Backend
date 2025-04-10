@@ -10,20 +10,19 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import komeiji.back.entity.UserClass;
+import komeiji.back.repository.UserDao;
 import komeiji.back.service.UserService;
 import komeiji.back.entity.User;
-import komeiji.back.utils.RedisUtils;
+import komeiji.back.utils.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.json.JSONObject;
 import org.springframework.web.bind.annotation.*;
-import komeiji.back.utils.Result;
 import jakarta.annotation.Resource;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.security.NoSuchAlgorithmException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -43,6 +42,9 @@ public class UserController {
     @Resource
     public RedisUtils redisUtils;
 
+    @Resource
+    UserDao userdao;
+
     public static HashMap<String,HttpSession> sessions = new HashMap<>();
 
     @PostMapping("/login")
@@ -51,17 +53,25 @@ public class UserController {
             value = {
                     @ApiResponse(responseCode = "200", description = "登录成功", content = @Content(schema = @Schema(implementation = Result.class))),
                     @ApiResponse(responseCode = "402", description = "账号或密码错误", content = @Content(schema = @Schema(implementation = Result.class)))
+
             }
     )
-    public Result<String> loginController(@RequestBody User loginUser, HttpSession session, HttpServletResponse response) throws IOException {
+    public Result<String> loginController(@RequestBody User loginUser, HttpSession session, HttpServletResponse response) throws IOException, NoSuchAlgorithmException {
         System.out.println("用户名:"+loginUser.getUserName()+loginUser.getPassword());
 
         User loginResult = userService.loginService(loginUser.getUserName(), loginUser.getPassword());
 
         if(loginResult!= null){
+            if(redisUtils.isMember(RedisTable.loginUser, loginUser.getUserName())){
+                return Result.error(409,"该用户已登录",response);
+            }
             session.setAttribute("LoginUser", loginUser.getUserName());
             session.setAttribute("Id", loginResult.getId());
-            System.out.println(session.getId());
+
+            //NOTICE 确保只有一个账户登录
+            redisUtils.addSet(RedisTable.loginUser, loginUser.getUserName());
+
+
             return Result.success(loginUser.getUserName(), "登录成功");
         }
         else{
@@ -77,11 +87,21 @@ public class UserController {
                     @ApiResponse(responseCode = "456", description = "注册失败", content = @Content(schema = @Schema(implementation = Result.class)))
             }
     )
-    public Result<String> registerController(@RequestBody User newUser, HttpSession session, HttpServletResponse response) throws IOException {
+    public Result<String> registerController(@RequestBody User newUser, HttpSession session, HttpServletResponse response) throws IOException, NoSuchAlgorithmException {
+        if(!userService.userNameIsLegal(newUser.getUserName())){
+            System.out.println("注册用户名:"+newUser.getUserName());
+            return Result.error(457,"用户名不合法",response);
+        }
         Boolean registerResult = userService.registerService(newUser);
         if (registerResult) {
-            session.setAttribute("LoginUser", newUser.getUserName());
-            session.setAttribute("Id", newUser.getId());
+//            session.setAttribute("LoginUser", newUser.getUserName());
+//            session.setAttribute("Id", newUser.getId());
+            if(!newUser.getQualification().isEmpty()){
+                if(userdao.findByQualification(newUser.getQualification()) != null){
+                    return Result.error(460,"资质证书重复",response);
+                }
+            }
+
             return Result.success(newUser.getUserName(), "注册成功");
         } else {
             return Result.error(456, "注册失败", response);
@@ -91,28 +111,28 @@ public class UserController {
     @GetMapping("/logout")
     @Operation(summary = "用户登出", description = "用户登出，清除session")
     public void loginOut(HttpSession session) {
+        redisUtils.removeSet(RedisTable.loginUser, session.getAttribute("LoginUser"));
         session.removeAttribute("LoginUser");
+        session.removeAttribute("Id");
         session.invalidate();
+
     }
 
     @GetMapping("/test")
     @Operation(summary = "测试接口", description = "测试接口")
-    public String test() throws IOException {
-        List<Person> persons = new ArrayList<>();
-        persons.add(new Person("cjw", 25));
-        persons.add(new Person("lxy", 23));
-        persons.add(new Person("zxy", 22));
-        persons.add(new Person("zxy", 22));
+    public String test() throws IOException, IllegalAccessException {
+        String a = "abdfda";
+        String b = "jkfadjlk";
 
-        for(int i = 0;i<persons.size();i++){
-            redisUtils.rpush("persons", persons.get(i));
-        }
-        Object cjw = redisUtils.lpop("persons");
-        System.out.println(cjw);
-        System.out.println(cjw.getClass());
-        OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream("E:\\coding\\workspace\\Test\\1.json"),"UTF-8");
+        Object obj = Map.of("a",a,"b",b);
+        redisUtils.addHash("cjw","jjj",obj);
 
-        return cjw.toString();
+       Object result =redisUtils.getHash("cjw","jjj");
+
+        System.out.println(result);
+        Map<String,Object> map = (Map<String, Object>) result;
+
+        return result.toString();
 
     }
 
@@ -148,11 +168,11 @@ public class UserController {
             exclusionStrategy = new ExclusionStrategy() {
                 @Override
                 public boolean shouldSkipField(FieldAttributes f) {
-                    String filedName = f.getName();
-                    return filedName.equals("password")
-                            || filedName.equals("id")
-                            || filedName.equals("userClass")
-                            || filedName.equals("email");
+                    String fieldName = f.getName();
+                    return fieldName.equals("password")
+                            || fieldName.equals("id")
+                            || fieldName.equals("userClass")
+                            || fieldName.equals("email");
                 }
 
                 @Override
@@ -164,7 +184,9 @@ public class UserController {
             exclusionStrategy = new ExclusionStrategy() {
                 @Override
                 public boolean shouldSkipField(FieldAttributes f) {
-                    return false;
+                    String fieldName = f.getName();
+                    return fieldName.equals("password");
+
                 }
 
                 @Override
@@ -190,12 +212,11 @@ public class UserController {
     }
 
 
-    @PostMapping("/changeInfo")
+    @PostMapping("/changeUser")
     @Operation(summary = "根据传入的User数据修改用户信息", description = "根据传入的User数据修改用户信息,manager权限可以任意修改，其他用户只能修改自己的信息")
-    public Result<String> changeInfo(@RequestBody User user,HttpSession session) {
+    public Result<String> changeUser(@RequestBody User user,HttpSession session) throws NoSuchAlgorithmException {
         System.out.println(user.toString());
         User loginUser = userService.getUserById((long) session.getAttribute("Id"));
-
         if (loginUser.getUserClass() != UserClass.Manager) {
             if (user.getId() != (long) session.getAttribute("Id")) {
                 return Result.error("-1", "权限不足，不能修改其他用户信息");
@@ -206,7 +227,6 @@ public class UserController {
                 } else {
                     return Result.success("修改成功");
                 }
-
             }
         } else {
             int result = userService.updateUser(user);
@@ -218,6 +238,55 @@ public class UserController {
         }
     }
 
+    @PostMapping("/resetPassword")
+    @Operation(summary = "根据传入的User数据修改用户信息", description = "根据传入的User数据修改用户信息,manager权限可以任意修改，其他用户只能修改自己的信息")
+    public Result<String> resetPassword(@RequestBody int userId, HttpSession session) throws NoSuchAlgorithmException {
+        User loginUser = userService.getUserById((long) session.getAttribute("Id"));
+        User wantedUser = userService.getUserById(userId);
+        if (loginUser.getId() == userId || loginUser.getUserClass() == UserClass.Manager) {
+            int result = userService.updatePassword(wantedUser, "123456");
+            if (result == 0) {
+                return Result.error("-2", "修改失败");
+            } else {
+                return Result.success("修改成功");
+            }
+        } else return Result.error("-1", "不能修改其他用户的密码");
+    }
+
+    @PostMapping("/changePassword")
+    @Operation(summary = "根据传入的User数据修改用户信息", description = "根据传入的User数据修改用户信息,manager权限可以任意修改，其他用户只能修改自己的信息")
+    public Result<String> changePassword(@RequestBody ChangePasswordRequest request, HttpSession session) throws NoSuchAlgorithmException {
+        User loginUser = userService.getUserById((long) session.getAttribute("Id"));
+        String oldMD5 = MD5Utils.toMD5(request.getOldPassword());
+        if (!oldMD5.equals(loginUser.getPassword())) { System.out.println("旧密码错误"); return Result.error("-2", "密码错误");}
+        int result = userService.updatePassword(loginUser, request.getNewPassword());
+        if (result == 0) {
+            return Result.error("-2", "修改失败");
+        } else {
+            return Result.success("修改成功");
+        }
+    }
+
+    @PostMapping("/changeUserInfo")
+    public Result<String> changeUserInfo(@RequestBody User user, HttpSession session) throws NoSuchAlgorithmException {
+        User loginUser = userService.getUserById((long) session.getAttribute("Id"));
+        if (loginUser.getId() != (long) session.getAttribute("Id")) { return Result.error("-1", "用户不对应");}
+        int result = userService.updateUserInfo(user);
+        if (result == 0) {
+            return Result.error("-2", "修改失败");
+        } else {
+            return Result.success("保存成功");
+        }
+    }
+
+    @Setter
+    @Getter
+    @Schema(description = "用户类别请求参数")
+    public static class ChangePasswordRequest {
+        @Schema(description = "用户类别代码", example = "Normal")
+        private String oldPassword;
+        private String newPassword;
+    }
 
     @Setter
     @Getter
@@ -229,8 +298,8 @@ public class UserController {
 
     @GetMapping("/checkSession")
     @Operation(summary = "检查session", description = "接受客户端请求，经过拦截器检测后如果没问题则返回值，否则在拦截器中返回error")
-    public int checkSession(HttpSession session) {
-        return getUserBySession(session).getUserClass().getCode();
+    public User checkSession(HttpSession session) {
+        return getUserBySession(session);
     }
 
     private User getUserBySession(HttpSession session) {
@@ -239,15 +308,4 @@ public class UserController {
     }
 }
 
- class Person{
-   String name;
-   int age;
-   public Person(){
-       this.name = "";
-       this.age = 0;
-   }
-   public Person(String name,int age){
-       this.name=name;
-       this.age=age;
-   }
- }
+
