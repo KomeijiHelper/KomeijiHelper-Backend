@@ -154,6 +154,9 @@ public class RedisUtils {
     public Boolean hasHashKey(String table,String key){
         return redisTemplate.opsForHash().hasKey(table,key);
     }
+    public Set<Object> getHashKeys(String table){
+        return redisTemplate.opsForHash().keys(table);
+    }
 
 
 
