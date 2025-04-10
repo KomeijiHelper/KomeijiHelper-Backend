@@ -215,12 +215,20 @@ public class UserController {
     @Operation(summary = "根据传入的User数据修改用户信息", description = "根据传入的User数据修改用户信息,manager权限可以任意修改，其他用户只能修改自己的信息")
     public Result<String> changeInfo(@RequestBody User user,HttpSession session) throws NoSuchAlgorithmException {
         System.out.println(user.toString());
-        user.setPassword(MD5Utils.toMD5(user.getPassword()));
-        User loginUser = userService.getUserById((long) session.getAttribute("Id"));
+        if (user.getPassword() == null || user.getPassword().isEmpty()) {
+            User loginUser = userService.getUserById((long) session.getAttribute("Id"));
 
-        if (loginUser.getUserClass() != UserClass.Manager) {
-            if (user.getId() != (long) session.getAttribute("Id")) {
-                return Result.error("-1", "权限不足，不能修改其他用户信息");
+            if (loginUser.getUserClass() != UserClass.Manager) {
+                if (user.getId() != (long) session.getAttribute("Id")) {
+                    return Result.error("-1", "权限不足，不能修改其他用户信息");
+                } else {
+                    int result = userService.updateUser(user);
+                    if (result == 0) {
+                        return Result.error("-2", "修改失败");
+                    } else {
+                        return Result.success("修改成功");
+                    }
+                }
             } else {
                 int result = userService.updateUser(user);
                 if (result == 0) {
@@ -230,13 +238,28 @@ public class UserController {
                 }
             }
         } else {
-            int result = userService.updateUser(user);
-            if (result == 0) {
-                return Result.error("-2", "修改失败");
+            User loginUser = userService.getUserById((long) session.getAttribute("Id"));
+            if (loginUser.getUserClass() != UserClass.Manager) {
+                if (user.getId() != (long) session.getAttribute("Id")) {
+                    return Result.error("-1", "权限不足，不能修改其他用户信息");
+                } else {
+                    int result = userService.updatePassword(user);
+                    if (result == 0) {
+                        return Result.error("-2", "修改失败");
+                    } else {
+                        return Result.success("修改成功");
+                    }
+                }
             } else {
-                return Result.success("修改成功");
+                int result = userService.updatePassword(user);
+                if (result == 0) {
+                    return Result.error("-2", "修改失败");
+                } else {
+                    return Result.success("修改成功");
+                }
             }
         }
+
     }
 
 

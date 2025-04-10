@@ -73,6 +73,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public int updateUser(User user) {
-        return userDao.updateUser(user.getPassword(), user.getUserClass(), user.getEmail(), user.getId());
+        return userDao.updateUser(user.getUserClass(), user.getEmail(), user.getId());
+    }
+
+    @Override
+    public int updatePassword(User user) throws NoSuchAlgorithmException {
+        return userDao.updatePassword(MD5Utils.toMD5(user.getPassword()), user.getId());
     }
 }
