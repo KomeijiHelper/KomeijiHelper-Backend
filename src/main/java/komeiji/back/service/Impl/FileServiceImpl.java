@@ -19,7 +19,7 @@ public class FileServiceImpl implements FileService {
 
     private static final Tika tika = new Tika();
 
-    private static final File uploadDir = new File("C:\\Users\\Tofweod\\Desktop\\server\\public");
+    private static final File uploadDir = new File("C:\\Users\\Public\\Music");
     private static final Logger logger = LoggerFactory.getLogger(FileService.class);
 
 //    private static final String urlHead = "https://komeiji.cyou/files/image/";

@@ -13,7 +13,7 @@ public interface UserService {
     List<User> getUsersByUserClass(UserClass userClass);
     List<User> getAllUsers();
     int updateUser(User user);
-    int updatePassword(User user) throws NoSuchAlgorithmException;
+    int updatePassword(User user, String password) throws NoSuchAlgorithmException;
     User getUserById(long id);
     Boolean userNameIsLegal(String username);
 }
