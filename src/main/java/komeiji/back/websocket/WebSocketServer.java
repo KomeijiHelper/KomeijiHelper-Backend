@@ -6,9 +6,12 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
+import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolConfig;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.stream.ChunkedWriteHandler;
 import komeiji.back.websocket.channel.handlers.*;
 import komeiji.back.websocket.message.fowardqueue.MessageForwardQueue;
@@ -18,6 +21,8 @@ import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.net.ssl.SSLException;
+import java.io.File;
 import java.util.concurrent.TimeUnit;
 
 
@@ -25,14 +30,14 @@ public class WebSocketServer {
 
     private static WebSocketServer server = null;
 
-    public static WebSocketServer getWebSocketSingleServer(LogLevel logLevel, int httpMaxContentLength, String url,
+    public static WebSocketServer getWebSocketSingleServer(boolean ssl,LogLevel logLevel, int httpMaxContentLength, String url,
                                                            SessionManager sessionManager, MessageForwardQueue messageForwardQueue,
                                                            ConversationManager conversationManager) {
         if (server != null) {
             logger.error("Websocket server has already been build");
             System.exit(1);
         }
-        server = new WebSocketServer(logLevel, httpMaxContentLength, url, sessionManager,messageForwardQueue,conversationManager);
+        server = new WebSocketServer(ssl,logLevel, httpMaxContentLength, url, sessionManager,messageForwardQueue,conversationManager);
         return server;
     }
 
@@ -62,7 +67,9 @@ public class WebSocketServer {
 
     private ServerBootstrap bootstrap;
 
-    public WebSocketServer(LogLevel logLevel, int httpMaxContentLength, String url,
+    private final boolean ssl;
+
+    public WebSocketServer(boolean ssl,LogLevel logLevel, int httpMaxContentLength, String url,
                            SessionManager sessionManager, MessageForwardQueue messageForwardQueue,
                            ConversationManager conversationManager) {
        this.bossGroup = new NioEventLoopGroup();
@@ -72,24 +79,44 @@ public class WebSocketServer {
        this.messageForwardQueue = messageForwardQueue;
        this.conversationManager = conversationManager;
        this.url = url;
+       this.ssl = ssl;
        InitServer(logLevel,httpMaxContentLength,url);
     }
 
     private void InitServer(LogLevel logLevel,int httpMaxContentLength,String url) {
-            bootstrap = new ServerBootstrap();
+        bootstrap = new ServerBootstrap();
             bootstrap.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
                     .handler(new LoggingHandler(logLevel))
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel socketChannel) {
+                            SslContext sslContext = null;
+                            if(ssl) {
+                                File certChainFile = new File("/etc/letsencrypt/live/komeiji.cyou/fullchain.pem");
+                                File privateKeyFile = new File("/etc/letsencrypt/live/komeiji.cyou/privkey.pem");
+                                try {
+                                    sslContext = SslContextBuilder.forServer(certChainFile,privateKeyFile).build();
+                                } catch (SSLException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
                             ChannelPipeline pipeline = socketChannel.pipeline();
+
+                            if (sslContext != null) {
+                                pipeline.addLast(sslContext.newHandler(socketChannel.alloc()));
+                            }
 
                             pipeline.addLast(new HttpServerCodec());
                             pipeline.addLast(new ChunkedWriteHandler());
                             pipeline.addLast(new HttpObjectAggregator(httpMaxContentLength));
 
-                            pipeline.addLast(new WebSocketServerProtocolHandler(url,true));
+                            pipeline.addLast(new WebSocketServerProtocolHandler(
+                                    WebSocketServerProtocolConfig.newBuilder()
+                                            .websocketPath(url)
+                                            .checkStartsWith(true)
+                                            .maxFramePayloadLength(httpMaxContentLength)
+                                            .build()));
 
                             pipeline.addLast(new WebSocketConnectHandler());
                             pipeline.addLast(new FrameProtocolHandler());

@@ -24,7 +24,7 @@ import java.util.concurrent.Executors;
 public class WebSocketTests {
 
     private static final int port = 55480;
-    private static final WebSocketServer webSocketServer = WebSocketServer.getWebSocketSingleServer(LogLevel.INFO,8192,"/ws",
+    private static final WebSocketServer webSocketServer = WebSocketServer.getWebSocketSingleServer(false,LogLevel.INFO,8192,"/ws",
             new SessionManager(new DefaultChannelGroup(GlobalEventExecutor.INSTANCE)),
             new CLMessageQueue(),
             new ConversationManager());

@@ -71,6 +71,7 @@ public class UserController {
             //NOTICE 确保只有一个账户登录
             redisUtils.addSet(RedisTable.loginUser, loginUser.getUserName());
 
+
             return Result.success(loginUser.getUserName(), "登录成功");
         }
         else{
@@ -95,7 +96,7 @@ public class UserController {
         if (registerResult) {
 //            session.setAttribute("LoginUser", newUser.getUserName());
 //            session.setAttribute("Id", newUser.getId());
-            if(newUser.getQualification().length() != 0){
+            if(!newUser.getQualification().isEmpty()){
                 if(userdao.findByQualification(newUser.getQualification()) != null){
                     return Result.error(460,"资质证书重复",response);
                 }
@@ -212,24 +213,14 @@ public class UserController {
     }
 
 
-    @PostMapping("/changeInfo")
+    @PostMapping("/changeUser")
     @Operation(summary = "根据传入的User数据修改用户信息", description = "根据传入的User数据修改用户信息,manager权限可以任意修改，其他用户只能修改自己的信息")
-    public Result<String> changeInfo(@RequestBody User user,HttpSession session) throws NoSuchAlgorithmException {
+    public Result<String> changeUser(@RequestBody User user,HttpSession session) throws NoSuchAlgorithmException {
         System.out.println(user.toString());
-        if (user.getPassword() == null || user.getPassword().isEmpty()) {
-            User loginUser = userService.getUserById((long) session.getAttribute("Id"));
-
-            if (loginUser.getUserClass() != UserClass.Manager) {
-                if (user.getId() != (long) session.getAttribute("Id")) {
-                    return Result.error("-1", "权限不足，不能修改其他用户信息");
-                } else {
-                    int result = userService.updateUser(user);
-                    if (result == 0) {
-                        return Result.error("-2", "修改失败");
-                    } else {
-                        return Result.success("修改成功");
-                    }
-                }
+        User loginUser = userService.getUserById((long) session.getAttribute("Id"));
+        if (loginUser.getUserClass() != UserClass.Manager) {
+            if (user.getId() != (long) session.getAttribute("Id")) {
+                return Result.error("-1", "权限不足，不能修改其他用户信息");
             } else {
                 int result = userService.updateUser(user);
                 if (result == 0) {
@@ -239,30 +230,64 @@ public class UserController {
                 }
             }
         } else {
-            User loginUser = userService.getUserById((long) session.getAttribute("Id"));
-            if (loginUser.getUserClass() != UserClass.Manager) {
-                if (user.getId() != (long) session.getAttribute("Id")) {
-                    return Result.error("-1", "权限不足，不能修改其他用户信息");
-                } else {
-                    int result = userService.updatePassword(user);
-                    if (result == 0) {
-                        return Result.error("-2", "修改失败");
-                    } else {
-                        return Result.success("修改成功");
-                    }
-                }
+            int result = userService.updateUser(user);
+            if (result == 0) {
+                return Result.error("-2", "修改失败");
             } else {
-                int result = userService.updatePassword(user);
-                if (result == 0) {
-                    return Result.error("-2", "修改失败");
-                } else {
-                    return Result.success("修改成功");
-                }
+                return Result.success("修改成功");
             }
         }
-
     }
 
+    @PostMapping("/resetPassword")
+    @Operation(summary = "根据传入的User数据修改用户信息", description = "根据传入的User数据修改用户信息,manager权限可以任意修改，其他用户只能修改自己的信息")
+    public Result<String> resetPassword(@RequestBody int userId, HttpSession session) throws NoSuchAlgorithmException {
+        User loginUser = userService.getUserById((long) session.getAttribute("Id"));
+        User wantedUser = userService.getUserById(userId);
+        if (loginUser.getId() == userId || loginUser.getUserClass() == UserClass.Manager) {
+            int result = userService.updatePassword(wantedUser, "123456");
+            if (result == 0) {
+                return Result.error("-2", "修改失败");
+            } else {
+                return Result.success("修改成功");
+            }
+        } else return Result.error("-1", "不能修改其他用户的密码");
+    }
+
+    @PostMapping("/changePassword")
+    @Operation(summary = "根据传入的User数据修改用户信息", description = "根据传入的User数据修改用户信息,manager权限可以任意修改，其他用户只能修改自己的信息")
+    public Result<String> changePassword(@RequestBody ChangePasswordRequest request, HttpSession session) throws NoSuchAlgorithmException {
+        User loginUser = userService.getUserById((long) session.getAttribute("Id"));
+        String oldMD5 = MD5Utils.toMD5(request.getOldPassword());
+        if (!oldMD5.equals(loginUser.getPassword())) { System.out.println("旧密码错误"); return Result.error("-2", "密码错误");}
+        int result = userService.updatePassword(loginUser, request.getNewPassword());
+        if (result == 0) {
+            return Result.error("-2", "修改失败");
+        } else {
+            return Result.success("修改成功");
+        }
+    }
+
+    @PostMapping("/changeUserInfo")
+    public Result<String> changeUserInfo(@RequestBody User user, HttpSession session) throws NoSuchAlgorithmException {
+        User loginUser = userService.getUserById((long) session.getAttribute("Id"));
+        if (loginUser.getId() != (long) session.getAttribute("Id")) { return Result.error("-1", "用户不对应");}
+        int result = userService.updateUserInfo(user);
+        if (result == 0) {
+            return Result.error("-2", "修改失败");
+        } else {
+            return Result.success("保存成功");
+        }
+    }
+
+    @Setter
+    @Getter
+    @Schema(description = "用户类别请求参数")
+    public static class ChangePasswordRequest {
+        @Schema(description = "用户类别代码", example = "Normal")
+        private String oldPassword;
+        private String newPassword;
+    }
 
     @Setter
     @Getter
@@ -274,8 +299,8 @@ public class UserController {
 
     @GetMapping("/checkSession")
     @Operation(summary = "检查session", description = "接受客户端请求，经过拦截器检测后如果没问题则返回值，否则在拦截器中返回error")
-    public int checkSession(HttpSession session) {
-        return getUserBySession(session).getUserClass().getCode();
+    public User checkSession(HttpSession session) {
+        return getUserBySession(session);
     }
 
     private User getUserBySession(HttpSession session) {

@@ -26,6 +26,4 @@ public class OnlineUserController {
         result.remove("-1");
         return Result.success(result,"成功");
     }
-
-
 }

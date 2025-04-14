@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
         }
         else {
             user.setPassword(MD5Utils.toMD5(user.getPassword()));
-            if(user.getNickName().length() == 0 ){
+            if(user.getNickName().isEmpty()){
                 user.setNickName("User:"+ user.getUserName());
             }
             userDao.save(user);
@@ -73,11 +73,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public int updateUser(User user) {
-        return userDao.updateUser(user.getUserClass(), user.getEmail(), user.getId());
+        return userDao.updateUser(user.getUserClass(), user.getEmail(), user.getNickName(), user.getId());
     }
 
     @Override
-    public int updatePassword(User user) throws NoSuchAlgorithmException {
-        return userDao.updatePassword(MD5Utils.toMD5(user.getPassword()), user.getId());
+    public int updatePassword(User user, String password) throws NoSuchAlgorithmException {
+        return userDao.updatePassword(MD5Utils.toMD5(password), user.getId());
+    }
+
+    @Override
+    public int updateUserInfo(User user) {
+        return userDao.updateUserInfo(user.getNickName(), user.getEmail(), user.getId());
     }
 }

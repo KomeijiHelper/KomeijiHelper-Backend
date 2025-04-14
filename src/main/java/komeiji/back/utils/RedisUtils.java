@@ -162,4 +162,3 @@ public class RedisUtils {
         redisTemplate.opsForHash().put(table,key,value);
     }
 }
-
