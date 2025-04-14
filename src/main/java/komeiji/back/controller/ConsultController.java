@@ -8,6 +8,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import komeiji.back.entity.enum_entity.ConsultRequestStatus;
 import komeiji.back.service.ConsultService;
+import komeiji.back.utils.RedisTable;
+import komeiji.back.utils.RedisUtils;
 import komeiji.back.utils.Result;
 import komeiji.back.websocket.message.Message;
 import komeiji.back.websocket.message.MessageFactory;
@@ -41,6 +43,8 @@ public class ConsultController {
     private ConsultService consult_Service_service;
     @Resource
     private ConsultService consultService;
+    @Resource
+    RedisUtils redisUtils;
 
     /**
      *
@@ -59,12 +63,17 @@ public class ConsultController {
 
     @GetMapping("/connect_request")
     public Result<String> connectRequest(@Param("consult_id") String consult_id, HttpSession session, HttpServletResponse response) throws IOException, InterruptedException, NoSuchAlgorithmException {
-        //TODO 当前正在等待的用户不能重复预约
+        //TODO 当前正在等待的用户不能重复预约 正在接受咨询的咨询师也不能进行接受
         String Login_user = (String)session.getAttribute("LoginUser");
-
         if(requestStatus_map.containsKey(Login_user)) {
             return Result.error("405","您已有其他请求，请等待处理");
         }
+//        if(redisUtils.hasHashKey(RedisTable.SessionToUser,Login_user)) {
+//            return Result.error("410","您当前正在进行咨询，请结束后再尝试");
+//        }
+//        if(redisUtils.hasHashKey(RedisTable.SessionToUser,consult_id)) {
+//            return Result.error("411","该咨询师正在工作，请稍后再试");
+//        }
 
         waiters.put(Login_user, new CountDownLatch(1));
         invite_map.put(Login_user, consult_id);
