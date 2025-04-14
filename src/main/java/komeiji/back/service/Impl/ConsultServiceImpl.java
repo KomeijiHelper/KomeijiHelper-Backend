@@ -4,9 +4,11 @@ import com.google.gson.Gson;
 import jakarta.annotation.Resource;
 import komeiji.back.entity.ChatRecord;
 import komeiji.back.entity.User;
+import komeiji.back.entity.UserClass;
 import komeiji.back.repository.ChatRecordDao;
 import komeiji.back.repository.UserDao;
 import komeiji.back.service.ConsultService;
+import komeiji.back.utils.Result;
 import komeiji.back.websocket.message.Message;
 import komeiji.back.websocket.message.MessageFactory;
 import komeiji.back.websocket.message.MessageType;
@@ -37,7 +39,7 @@ public class ConsultServiceImpl implements ConsultService {
     @Resource
     ChatRecordDao chatRecordDao;
     @Resource
-    UserDao userDao;
+    UserDao userdao;
 
     @Override
     public void conenctRequest_Service(SessionToken patient_sessiontoken, SessionToken consultant_sessiontoken, String patient_name, String consultant_name) throws UnsupportedEncodingException, NoSuchAlgorithmException {
@@ -60,6 +62,7 @@ public class ConsultServiceImpl implements ConsultService {
         String patient_token = patient_md+time;
         String consultant_token = consultant_md+time;
 
+        //TODO 需要区分是 患者——咨询师 还是 咨询师——督导
         StoreChatRecord(patient_token,consultant_token,consultant_name,patient_name,time);
         // patient和consultant的sessiontoken为userName加密后与timeStamp拼接而来
 
@@ -79,21 +82,39 @@ public class ConsultServiceImpl implements ConsultService {
 //        Message reject_patient = MessageFactory.newTextMessage(MessageType.)
     }
 
+
+
+
     public void StoreChatRecord(String patient_token,String consultant_token,String consultant_name,String patient_name,String time)
     {
-        //NOTICE 通过patient_token和consultant_token合成CID， 在Redis中将CID与patient_name / consultant_name对应 以便聊天记录的导出
+        //TODO 将咨询师和患者作区分
+       //TODO 增加咨询师和督导进行聊天时 将HelpSessionToUser UserToHelpSession中进行存储 + 数据库中对应的设置
+        //NOTICE 可以不使用HelpSessionToUser 而是全部存储在SessionToUser中 这样可以统一找到对应的求助者是咨询师还是patient
+
+        User patient = userdao.findByUserName(patient_name);
         UUID CID = ConversationUtils.sessionTokens2CID(new SessionToken(patient_token),new SessionToken(consultant_token));
 
-        Map<String,String> map = Map.of("patient",patient_name,"consultant",consultant_name);
-        redisUtils.addHash(RedisTable.SessionToUser,CID.toString(),map);
-        redisUtils.addHash(RedisTable.UserToSession,patient_name,CID.toString());
-        redisUtils.addHash(RedisTable.UserToSession,consultant_name,CID.toString());
+        Map<String,String> map = Map.of("patient",patient_name,"consultant",consultant_name);//NOTICE 通过patient_token和consultant_token合成CID， 在Redis中将CID与patient_name / consultant_name对应 以便聊天记录的导出
+        redisUtils.addHash(RedisTable.SessionToUser,CID.toString(),map); //NOTICE 无论是普通患者还是咨询师求助 都需要在SessionToUser中存储 区分的地方在UserToSession
 
-        //TODO 在websocket连接断开后 去除对应RedisTable中的内容
+        if(patient.getUserClass() == UserClass.Assistant){
+            //NOTICE 在此处处理咨询师求助的逻辑
+            //NOTICE 不同的点在于 咨询师和督导需要存储在UserToHelpSession中
+            redisUtils.addHash(RedisTable.UserToHelpSession,patient_token,CID.toString());
+            redisUtils.addHash(RedisTable.UserToHelpSession,consultant_token,CID.toString());
 
+            //TODO 在websocket断开后 需要进行区分
+        }
+        else {
+            //NOTICE 此处进行普通患者进行咨询的逻辑
+            redisUtils.addHash(RedisTable.UserToSession, patient_name, CID.toString());
+            redisUtils.addHash(RedisTable.UserToSession, consultant_name, CID.toString());
+        }
+
+        //NOTICE 在websocket连接断开后 去除对应RedisTable中的内容
         //NOTICE 在数据库中存储对应索引
-        User consultant = userDao.findByUserName(consultant_name);
-        chatRecordDao.save(new ChatRecord(CID.toString(),patient_name,consultant_name,consultant.getUserClass().getCode(),time,"chat/"+CID.toString()));
+        User consultant = userdao.findByUserName(consultant_name);
+        chatRecordDao.save(new ChatRecord(CID.toString(),patient_name,consultant_name,consultant.getUserClass().getCode(),time,"chats/"+CID.toString()+".json"));
 
     }
 

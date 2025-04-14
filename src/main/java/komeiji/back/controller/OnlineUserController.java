@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import komeiji.back.entity.UserClass;
 import komeiji.back.service.OnlineUserService;
+import komeiji.back.utils.Result;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,10 +21,10 @@ public class OnlineUserController {
     private OnlineUserService onlineUserService;
 
     @PostMapping("/getUser")
-    public Set<Object> getUser(@RequestBody UserClassRequest cla, HttpServletResponse response, HttpSession session) throws IOException {
+    public Result<Object> getUser(@RequestBody UserClassRequest cla, HttpServletResponse response, HttpSession session) throws IOException {
         Set<Object> result =  onlineUserService.getOnlineUsers(UserClass.fromCode(cla.getUserClassCode()));
         result.remove("-1");
-        return result;
+        return Result.success(result,"成功");
     }
 
 

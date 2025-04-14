@@ -4,6 +4,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import komeiji.back.entity.User;
+import komeiji.back.entity.UserClass;
 import komeiji.back.repository.UserDao;
 import komeiji.back.websocket.WebSocketServer;
 import komeiji.back.websocket.channel.Attributes;
@@ -115,16 +116,32 @@ public class WebSocketConnectHandler extends ChannelInboundHandlerAdapter {
             return;
         }
         else{
+            //TODO 要对普通患者和咨询师的求助进行区分
             //NOTICE 处理conversation的逻辑 将CID对应的记录删除
+
             String CID = ConversationUtils.sessionTokens2CID(new SessionToken(id),new SessionToken(target)).toString();
             if(!redisUtils.hasHashKey(RedisTable.SessionToUser,CID)){
                 return;
             }
             else{
+                //NOTICE 聊天结束后 将CID对应的consultant_name去除 patient_name需要在后续的评分中
                 Map<String,String> map = (Map<String,String>)redisUtils.getHash(RedisTable.SessionToUser,CID);
                 String patient_name = map.get("patient");
-                if(redisUtils.hasHashKey(RedisTable.UserToSession,patient_name)){
-                    redisUtils.deleteHash(RedisTable.UserToSession,patient_name);
+                String consultant_name = map.get("consultant");
+                User patient = userdao.findByUserName(patient_name);
+                if(patient.getUserClass() == UserClass.Normal){
+                    //NOTICE 普通用户需要添加一个PatientTempScore (有过期时间)
+                    if(redisUtils.hasHashKey(RedisTable.UserToSession,patient_name)){
+                        redisUtils.deleteHash(RedisTable.UserToSession,consultant_name);
+                    }
+                    if(redisUtils.hasHashKey(RedisTable.UserToHelpSession,consultant_name)){
+                        redisUtils.deleteHash(RedisTable.UserToHelpSession,consultant_name);
+                    }
+                    redisUtils.set(RedisTable.PatientTempScore+patient_name,CID,300);//NOTICE 在五分钟内可以进行评分 超时后只能在历史记录中进行评分
+                }
+                else{
+                    redisUtils.deleteHash(RedisTable.UserToHelpSession,patient_name);
+                    redisUtils.deleteHash(RedisTable.UserToHelpSession,consultant_name);
                 }
                 redisUtils.deleteHash(RedisTable.SessionToUser,CID);
             }

@@ -1,5 +1,6 @@
 package komeiji.back.service;
 
+import komeiji.back.utils.Result;
 import komeiji.back.websocket.session.SessionToken;
 
 import java.io.UnsupportedEncodingException;
