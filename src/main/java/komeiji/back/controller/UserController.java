@@ -120,7 +120,8 @@ public class UserController {
 
     @GetMapping("/test")
     @Operation(summary = "测试接口", description = "测试接口")
-    public String test() throws IOException, IllegalAccessException {
+    public String test(HttpServletRequest request) throws IOException, IllegalAccessException {
+//        System.out.println(request.getHeaders());
         String a = "abdfda";
         String b = "jkfadjlk";
 

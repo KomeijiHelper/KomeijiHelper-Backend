@@ -1,6 +1,8 @@
 package komeiji.back.websocket.persistence.impl;
 
 import com.google.gson.*;
+import komeiji.back.entity.ChatRecord;
+import komeiji.back.repository.ChatRecordDao;
 import komeiji.back.utils.BeanUtils;
 import komeiji.back.utils.RedisUtils;
 import komeiji.back.websocket.persistence.MessageRecord;
@@ -15,6 +17,7 @@ import java.util.concurrent.CompletableFuture;
 public class RedisRecordstorage implements RecordStorage {
     private static final Gson gson = new Gson();
     private final RedisUtils redisUtils = BeanUtils.getBean(RedisUtils.class);
+    private final ChatRecordDao chatRecordDao = BeanUtils.getBean(ChatRecordDao.class);
 
     private UUID uuid;
     private Meta meta;
@@ -44,6 +47,8 @@ public class RedisRecordstorage implements RecordStorage {
         }
         System.out.println("_________-close-_________");
         String filePath = this.meta.getStorePath();
+//        ChatRecord crd = chatRecordDao.findById(uuid.toString());
+        filePath = "chats/"+this.uuid.toString()+".json";
 
         OutputStreamWriter osw = null;
         try {

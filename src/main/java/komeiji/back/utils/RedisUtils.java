@@ -157,9 +157,8 @@ public class RedisUtils {
     public Set<Object> getHashKeys(String table){
         return redisTemplate.opsForHash().keys(table);
     }
-
-
-
-
+    public void setHashKey(String table,String key,Object value)
+    {
+        redisTemplate.opsForHash().put(table,key,value);
+    }
 }
-
