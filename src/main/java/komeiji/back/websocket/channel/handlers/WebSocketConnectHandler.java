@@ -25,6 +25,7 @@ import komeiji.back.utils.RedisTable;
 import komeiji.back.utils.BeanUtils;
 
 import komeiji.back.websocket.persistence.ConversationUtils;
+import komeiji.back.websocket.utils.Utils;
 
 import java.util.Map;
 
@@ -48,8 +49,12 @@ public class WebSocketConnectHandler extends ChannelInboundHandlerAdapter {
         WebSocketServer.getWebSocketSingleServer().getSessionManager().removeSession(session);
         //TODO 在咨询会话关闭时 将SessionToUser表中 CID对应的patient字段 调用offLind函数
         offLine(session.getId().toString(),session.getTarget().toString());
-        closePeerChannel(session.getId(),session.getTarget());
-
+        if(ctx.channel().attr(Attributes.TIMEOUT).get() != null) {
+            closePeerChannel(session.getId(),session.getTarget(),4001,"time out close");
+        }
+        else{
+            closePeerChannel(session.getId(),session.getTarget(),4000,"close by peer");
+        }
 
         super.channelInactive(ctx);
     }
@@ -78,14 +83,14 @@ public class WebSocketConnectHandler extends ChannelInboundHandlerAdapter {
         super.exceptionCaught(ctx, cause);
     }
 
-    private void closePeerChannel(SessionToken selfToken,SessionToken peerToken) {
+    private void closePeerChannel(SessionToken selfToken,SessionToken peerToken,int code, String reason) {
         Session peer = WebSocketServer.getWebSocketSingleServer().getSessionManager().findChatSession(peerToken);
         if(peer == null) {
             return;
         }
         assert peer.getTarget().equals(selfToken);
         Channel peerChannel = peer.getConnect();
-        peerChannel.close();
+        Utils.closeChannelWithoutResponse(peerChannel,code,reason);
     }
 
     private void buildConversation(ChannelHandlerContext ctx){

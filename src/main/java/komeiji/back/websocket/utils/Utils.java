@@ -1,6 +1,9 @@
 package komeiji.back.websocket.utils;
 
 
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.handler.codec.http.websocketx.CloseWebSocketFrame;
 import komeiji.back.websocket.WebSocketServer;
 import komeiji.back.websocket.message.Message;
 import komeiji.back.websocket.session.Session;
@@ -62,4 +65,10 @@ public class Utils {
     public static int forwardMessageInUserSession(Message message){
         return forwardMessageInUserSession(message,false);
     }
+
+    public static void closeChannelWithoutResponse(Channel channel,int code, String reason) {
+        CloseWebSocketFrame closeFrame = new CloseWebSocketFrame(code, reason);
+        channel.writeAndFlush(closeFrame).addListener(ChannelFutureListener.CLOSE);
+    }
+
 }
