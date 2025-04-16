@@ -6,6 +6,7 @@ import komeiji.back.entity.ChatRecord;
 import komeiji.back.entity.User;
 import komeiji.back.entity.UserClass;
 import komeiji.back.repository.ChatRecordDao;
+import komeiji.back.repository.ConsultantDao;
 import komeiji.back.repository.UserDao;
 import komeiji.back.service.ConsultService;
 import komeiji.back.utils.Result;
@@ -40,6 +41,8 @@ public class ConsultServiceImpl implements ConsultService {
     ChatRecordDao chatRecordDao;
     @Resource
     UserDao userdao;
+    @Resource
+    ConsultantDao consultantDao;
 
     @Override
     public void conenctRequest_Service(SessionToken patient_sessiontoken, SessionToken consultant_sessiontoken, String patient_name, String consultant_name) throws UnsupportedEncodingException, NoSuchAlgorithmException {
@@ -115,6 +118,13 @@ public class ConsultServiceImpl implements ConsultService {
         //NOTICE 在数据库中存储对应索引
         User consultant = userdao.findByUserName(consultant_name);
         chatRecordDao.save(new ChatRecord(CID.toString(),patient_name,consultant_name,consultant.getUserClass().getCode(),time,"chats/"+CID.toString()+".json"));
+//        if(consultant.getUserClass() == UserClass.Assistant){
+//            consultantDao.addOneTotalRecord(consultant.getId());
+////            Consultant
+//            if(redisUtils.hasHashKey(RedisTable.ConsultantInfo,consultant.toString())){
+//                redisUtils.setHa
+//            }
+//        }
 
     }
 

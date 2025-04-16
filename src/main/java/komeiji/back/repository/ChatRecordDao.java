@@ -26,4 +26,15 @@ public interface ChatRecordDao extends JpaRepository<ChatRecord, Long> {
     @Transactional
     @Query("select avg(cr.score) from ChatRecord cr where cr.consultantName = ?1 and cr.score > 0")//获取咨询师评分平均值
     Float getAverageScore(@Param("1")String consultantName);
+
+    //NOTICE 获取chatRecord总数
+    @Transactional
+    @Query("select count(*) from ChatRecord cr where cr.consultantName = ?1")
+    Integer countByConsultantName(@Param("1") String consultantName);
+
+    //NOTICE 获取评价过的chatRecord总数
+    @Transactional
+    @Query("select count(*) from ChatRecord cr where cr.consultantName = ?1 and cr.score > 0")
+    Integer countByConsultantNameAndScore(@Param("1") String consultantName);
+
 }
