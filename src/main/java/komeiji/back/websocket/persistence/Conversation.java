@@ -20,6 +20,15 @@ public class Conversation {
     private UUID CID;
     private RecordStorage storage;
 
+    private static final String sessionDirPath = "chats";
+    static {
+        try {
+            Files.createDirectories(Paths.get(sessionDirPath));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     // meta data
     @Getter
     private long timeStamp;
@@ -33,12 +42,6 @@ public class Conversation {
 
     private void start(){
         this.timeStamp = System.currentTimeMillis();
-        String sessionDirPath = String.format("chats/%s", CID);
-        try {
-            Files.createDirectories(Paths.get(sessionDirPath));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
         String storePath = String.format("%s/%s.json", sessionDirPath,timeStamp);
         storage.setMeta(new Meta(CID,timeStamp,characters, storePath));
     }
