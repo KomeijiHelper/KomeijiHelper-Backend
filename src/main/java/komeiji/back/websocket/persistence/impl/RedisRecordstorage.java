@@ -48,7 +48,6 @@ public class RedisRecordstorage implements RecordStorage {
         System.out.println("_________-close-_________");
         String filePath = this.meta.getStorePath();
 //        ChatRecord crd = chatRecordDao.findById(uuid.toString());
-        filePath = "chats/"+this.uuid.toString()+".json";
 
         OutputStreamWriter osw = null;
         try {
