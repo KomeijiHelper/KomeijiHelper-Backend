@@ -5,7 +5,12 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import jakarta.annotation.Resource;
 import komeiji.back.dto.RankDTO;
+import komeiji.back.entity.ChatRecord;
+import komeiji.back.entity.Consultant;
+import komeiji.back.entity.User;
+import komeiji.back.entity.UserClass;
 import komeiji.back.repository.ChatRecordDao;
+import komeiji.back.repository.ConsultantDao;
 import komeiji.back.repository.UserDao;
 import komeiji.back.service.ChatRecordService;
 import komeiji.back.utils.RedisTable;
@@ -24,6 +29,8 @@ public class ChatRecordServiceImpl implements ChatRecordService {
     private ChatRecordDao chatrecordDao;
     @Resource
     private UserDao userDao;
+    @Resource
+    private ConsultantDao consultantDao;
 
     private static final Gson gson = new Gson();
 
@@ -33,14 +40,25 @@ public class ChatRecordServiceImpl implements ChatRecordService {
         //NOTICE 当修改成功后 需要重新计算平均分
         if(result != 0)
         {
-            float avgScore = chatrecordDao.getAverageScore(rank.getCid());
-            if(redisUtils.hasHashKey(RedisTable.ConsultantAvgScore,consultantName))
+            User consultantUser = userDao.findByUserName(consultantName);
+            if(consultantUser == null || consultantUser.getUserClass() != UserClass.Assistant){
+                //NOTICE 如果consultant不是Assistant 不需要更新Consultant数据库中的数据
+                return result;
+            }
+            ChatRecord crd = chatrecordDao.findById(rank.getCid());
+            Float avgScore = chatrecordDao.getAverageScore(consultantName);
+            //NOTICE 更新Consultant数据库中的数据
+            consultantDao.updateAvgScore(consultantUser.getId(), avgScore);
+            //NOTICE 更新Redis中的数据
+            Consultant con = consultantDao.findByConsultantId(consultantUser.getId());
+            if(redisUtils.hasHashKey(RedisTable.ConsultantInfo,consultantName))
             {
-                redisUtils.addHash(RedisTable.ConsultantAvgScore,consultantName,avgScore);
+                redisUtils.setHashKey(RedisTable.ConsultantInfo,consultantName,con);
             }
             else{
-                redisUtils.setHashKey(RedisTable.ConsultantAvgScore,consultantName,avgScore);
+                redisUtils.addHash(RedisTable.ConsultantInfo,consultantName,con);
             }
+
         }
         return result;
     }
