@@ -3,7 +3,9 @@ package komeiji.back.controller;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import komeiji.back.utils.DeepSeekAPI;
-import org.springframework.http.ResponseEntity;
+import komeiji.back.utils.Result;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,9 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class AIChatController {
 
     @PostMapping("/chat")
-    public ResponseEntity<String> chat(@RequestBody String message) {
+    public Result<String> chat(@RequestBody AIChatRequest message) {
         try {
-            String response = DeepSeekAPI.chat(message);
+            String response = DeepSeekAPI.chat(message.getMessage());
             JsonObject jsonObject = JsonParser.parseString(response).getAsJsonObject();
             String content = jsonObject
                     .getAsJsonArray("choices")
@@ -25,10 +27,16 @@ public class AIChatController {
                     .getAsJsonObject("message")
                     .get("content")
                     .getAsString();
-            return ResponseEntity.ok(content);
+            return Result.success(content);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("Error: " + e.getMessage());
+            return Result.error("500", e.getMessage());
         }
+    }
+
+    @Setter
+    @Getter
+    private static class AIChatRequest{
+        private String message;
     }
 }
 
