@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
 
 public class WebSocketServer {
 
-    public static final long IDLE_TIME = TimeUnit.MINUTES.toMillis(1);
+    public static final long IDLE_TIME = TimeUnit.MINUTES.toMillis(10);
 
     private static WebSocketServer server = null;
 

@@ -31,6 +31,20 @@ spring:
     redis:
       host: 127.0.0.1
       port: 6379
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: komeiji.cyou@gmail.com # using google's mail as our official mail
+    password: jmjccsiynvxbpehx
+    protocol: smtp
+    default-encoding: UTF-8
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
 
 useSsl: true
 swagger:
