@@ -44,6 +44,20 @@ spring:
           max-idle: 8
           max-wait: -1ms
           max-active: 16
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: komeiji.cyou@gmail.com
+    password: jmjccsiynvxbpehx
+    protocol: smtp
+    default-encoding: UTF-8
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
 
 
 swagger:
