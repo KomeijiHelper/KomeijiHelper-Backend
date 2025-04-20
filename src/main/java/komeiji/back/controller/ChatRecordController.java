@@ -181,6 +181,10 @@ public class ChatRecordController {
         return Result.success(map);
     }
 
-
+    //TODO 历史聊天记录查询
+    @PostMapping("/getHistoryChat")
+    public Result getHistoryChat( HttpSession session) {
+        return Result.success(chatrecordDao.findAll());
+    }
 
 }

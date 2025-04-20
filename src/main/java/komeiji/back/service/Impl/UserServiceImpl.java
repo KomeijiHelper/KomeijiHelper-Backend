@@ -39,6 +39,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User loginService(String userName, String password) throws NoSuchAlgorithmException {
+        //TODO 用户名或者邮箱登录
         System.out.println("userName: " + userName);
         System.out.println("password: " + password);
         User user = userDao.findByUserNameAndPassword(userName, MD5Utils.toMD5(password));
