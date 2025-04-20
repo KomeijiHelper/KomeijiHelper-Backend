@@ -3,9 +3,11 @@ package komeiji.back.service.Impl;
 import com.google.gson.Gson;
 import jakarta.annotation.Resource;
 import komeiji.back.entity.ChatRecord;
+import komeiji.back.entity.Consultant;
 import komeiji.back.entity.User;
 import komeiji.back.entity.UserClass;
 import komeiji.back.repository.ChatRecordDao;
+import komeiji.back.repository.ConsultantDao;
 import komeiji.back.repository.UserDao;
 import komeiji.back.service.ConsultService;
 import komeiji.back.utils.Result;
@@ -40,6 +42,8 @@ public class ConsultServiceImpl implements ConsultService {
     ChatRecordDao chatRecordDao;
     @Resource
     UserDao userdao;
+    @Resource
+    ConsultantDao consultantDao;
 
     @Override
     public void conenctRequest_Service(SessionToken patient_sessiontoken, SessionToken consultant_sessiontoken, String patient_name, String consultant_name) throws UnsupportedEncodingException, NoSuchAlgorithmException {
@@ -113,8 +117,20 @@ public class ConsultServiceImpl implements ConsultService {
 
         //NOTICE 在websocket连接断开后 去除对应RedisTable中的内容
         //NOTICE 在数据库中存储对应索引
-        User consultant = userdao.findByUserName(consultant_name);
-        chatRecordDao.save(new ChatRecord(CID.toString(),patient_name,consultant_name,consultant.getUserClass().getCode(),time,"chats/"+CID.toString()+".json"));
+        User consultantUser = userdao.findByUserName(consultant_name);
+        chatRecordDao.save(new ChatRecord(CID.toString(),patient_name,consultant_name,consultantUser.getUserClass().getCode(),time,"chats/"+CID.toString()+".json"));
+        if(consultantUser.getUserClass() == UserClass.Assistant){
+            //NOTICE 更新Redis中咨询师具体数据 评分 总记录 评价记录
+            consultantDao.addOneTotalRecord(consultantUser.getId());
+            Consultant con = consultantDao.findByConsultantId(consultantUser.getId());
+
+            if(redisUtils.hasHashKey(RedisTable.ConsultantInfo,consultant_name)){
+                redisUtils.setHashKey(RedisTable.ConsultantInfo,consultant_name,con);
+            }
+            else{
+                redisUtils.addHash(RedisTable.ConsultantInfo,consultant_name,con);
+            }
+        }
 
     }
 

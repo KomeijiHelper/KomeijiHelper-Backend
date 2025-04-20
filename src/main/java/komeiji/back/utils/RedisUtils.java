@@ -9,6 +9,7 @@ import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.Set;
 
@@ -101,23 +102,23 @@ public class RedisUtils {
     {
         return redisTemplate.opsForList().rightPush(key,value);
     }
-
     public Long lpush(String key,Object value)
     {
         return redisTemplate.opsForList().leftPush(key,value);
     }
-
     public Object lpop(String key)
     {
         return redisTemplate.opsForList().leftPop(key);
     }
-
     public Object rpop(String key)
     {
         return redisTemplate.opsForList().rightPop(key);
     }
     public Long getListSize(String key){
         return redisTemplate.opsForList().size(key);
+    }
+    public List<Object> getList(String key){
+        return redisTemplate.opsForList().range(key,0,-1);
     }
 
     public Long addSet(String Key,Object value){

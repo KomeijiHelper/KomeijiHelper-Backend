@@ -11,10 +11,12 @@ import lombok.Setter;
 @Entity
 @Schema(name = "User", description = "用户实体类")
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Schema(description = "用户ID",example = "1")
     private long id;
+
 
     @Schema(description = "用户名",example = "admin",required = true)
     @Column(unique = true,nullable = false)
@@ -28,6 +30,7 @@ public class User {
     private UserClass userClass = UserClass.Normal;
 
     @Schema(description = "邮箱",example = "admin@example.com")
+    @Column(unique = true)
     private String email = "";
 
     @Schema(description = "用户昵称")
