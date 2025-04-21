@@ -92,15 +92,15 @@ public class UserController {
             System.out.println("注册用户名:"+newUser.getUserName());
             return Result.error(457,"用户名不合法",response);
         }
+        if(!newUser.getQualification().isEmpty()){
+            if(userdao.findByQualification(newUser.getQualification()) != null){
+                return Result.error(460,"资质证书重复",response);
+            }
+        }
         Boolean registerResult = userService.registerService(newUser);
         if (registerResult) {
-//            session.setAttribute("LoginUser", newUser.getUserName());
-//            session.setAttribute("Id", newUser.getId());
-            if(!newUser.getQualification().isEmpty()){
-                if(userdao.findByQualification(newUser.getQualification()) != null){
-                    return Result.error(460,"资质证书重复",response);
-                }
-            }
+            session.setAttribute("LoginUser", newUser.getUserName());
+            session.setAttribute("Id", newUser.getId());
 
             return Result.success(newUser.getUserName(), "注册成功");
         } else {
