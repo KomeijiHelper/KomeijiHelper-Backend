@@ -2,6 +2,7 @@ package komeiji.back.entity;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,11 +19,13 @@ public class User {
     private long id;
 
 
-    @Schema(description = "用户名",example = "admin",required = true)
+    @Schema(description = "用户名",example = "admin")
+    @NotNull(message = "用户名不能为空")
     @Column(unique = true,nullable = false)
     private String userName;
 
-    @Schema(description = "密码",example = "123456",required = true)
+    @Schema(description = "密码",example = "123456")
+    @NotNull(message = "密码不能为空")
     @Column(nullable = false)
     private String password;
 
