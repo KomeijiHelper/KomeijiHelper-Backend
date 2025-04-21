@@ -94,4 +94,9 @@ public class ChatRecordServiceImpl implements ChatRecordService {
     public Boolean verifySupervisor(String consultantName,String supervisorName) {
        return true;
     }
+
+    @Override
+    public List<ChatRecord> getHistory(String userName) {
+        return chatrecordDao.getAllChatRecordByUserName(userName);
+    }
 }

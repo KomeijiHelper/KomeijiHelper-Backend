@@ -11,5 +11,5 @@ public interface ChatRecordService {
     public Float getAvgScore(String consultantName);
     public Map<String,Object> getTempChat(String CID);
     public Boolean verifySupervisor(String consultantName, String supervisorName);
-//    public List<ChatRecord>
+    public List<ChatRecord> getHistory(String userName);
 }
