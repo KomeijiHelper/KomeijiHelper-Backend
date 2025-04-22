@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import komeiji.back.controller.UserController.UserClassRequest;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -29,14 +30,20 @@ public class OnlineUserController {
         result.remove("-1");
 
         //NOTICE result中存储着在线用户的userName
+
         if(cla.getUserClassCode() != UserClass.Assistant.getCode())
         {
+            if(cla.getUserClassCode() == UserClass.Supervisor.getCode())
+            {
+                List<Object> supervisors = onlineUserService.getSupervisors(result);
+                return Result.success(supervisors);
+            }
             return Result.success(result.stream().toList());
         }
         else{
             //NOTICE 从redis和数据库中获取在线用户
             List<Object> consultants = onlineUserService.getConsultants(result);
-            System.out.println(consultants);
+//            System.out.println(consultants);
             return Result.success(consultants);
         }
     }
