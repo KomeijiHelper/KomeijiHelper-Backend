@@ -1,6 +1,9 @@
 package komeiji.back.service.Impl;
 
+import komeiji.back.entity.Consultant;
 import komeiji.back.entity.UserClass;
+import komeiji.back.repository.ChatRecordDao;
+import komeiji.back.repository.ConsultantDao;
 import komeiji.back.service.UserService;
 import komeiji.back.repository.UserDao;
 import komeiji.back.entity.User;
@@ -19,6 +22,12 @@ public class UserServiceImpl implements UserService {
     @Resource
     private UserDao userDao;
 
+    @Resource
+    private ConsultantDao consultantDao;
+
+    @Resource
+    private ChatRecordDao chatRecordDao;
+
 
     @Override
     public Boolean userNameIsLegal(String username) {
@@ -30,9 +39,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User loginService(String userName, String password) throws NoSuchAlgorithmException {
+        //TODO 用户名或者邮箱登录
         System.out.println("userName: " + userName);
         System.out.println("password: " + password);
         User user = userDao.findByUserNameAndPassword(userName, MD5Utils.toMD5(password));
+        if(user != null){
+            addConsultantInfo(user);
+        }
         return user;
 
     }
@@ -49,7 +62,30 @@ public class UserServiceImpl implements UserService {
                 user.setNickName("User:"+ user.getUserName());
             }
             userDao.save(user);
+            User newUser = userDao.findByUserName(user.getUserName());
+            addConsultantInfo(newUser);
             return true;
+        }
+    }
+
+    public void addConsultantInfo(User user){ //NOTICE 用于在consultant表中添加
+        if(user.getUserClass() != UserClass.Assistant){
+            return;
+        }
+        else{
+            if(consultantDao.findByConsultantName(user.getUserName()) != null){
+                return;
+            }
+            Float avgScore = chatRecordDao.getAverageScore(user.getUserName());
+            Integer totalRecord = chatRecordDao.countByConsultantName(user.getUserName());
+            Integer scoreRecord = chatRecordDao.countByConsultantNameAndScore(user.getUserName());
+
+            float avg = avgScore!=null ? avgScore : 0.0f;
+            int totalR = totalRecord!=null ? totalRecord : 0;
+            int scoreR = scoreRecord!=null ? scoreRecord : 0;
+
+            Consultant consultant = new Consultant(user.getId(),user.getUserName(), avg, totalR, scoreR);
+            consultantDao.save(consultant);
         }
     }
 
@@ -83,6 +119,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public int updateUserInfo(User user) {
-        return userDao.updateUserInfo(user.getNickName(), user.getEmail(), user.getId());
+        return userDao.updateUserInfo(user.getNickName(), user.getEmail(), user.getQualification(), user.getEmergencyContact(), user.getId());
     }
 }

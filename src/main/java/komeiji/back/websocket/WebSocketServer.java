@@ -13,6 +13,7 @@ import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.stream.ChunkedWriteHandler;
+import io.netty.handler.timeout.IdleStateHandler;
 import komeiji.back.websocket.channel.handlers.*;
 import komeiji.back.websocket.message.fowardqueue.MessageForwardQueue;
 import komeiji.back.websocket.persistence.ConversationManager;
@@ -27,6 +28,8 @@ import java.util.concurrent.TimeUnit;
 
 
 public class WebSocketServer {
+
+    public static final long IDLE_TIME = TimeUnit.MINUTES.toMillis(10);
 
     private static WebSocketServer server = null;
 
@@ -120,6 +123,9 @@ public class WebSocketServer {
 
                             pipeline.addLast(new WebSocketConnectHandler());
                             pipeline.addLast(new FrameProtocolHandler());
+
+                            pipeline.addLast(new IdleStateHandler(IDLE_TIME,0,0,TimeUnit.MILLISECONDS));
+                            pipeline.addLast(new MessageIdleReadHandler());
 
                             // handlers for different types of message
                             pipeline.addLast(new TextMessageHandler());

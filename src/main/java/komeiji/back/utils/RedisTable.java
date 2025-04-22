@@ -9,6 +9,16 @@ public class RedisTable {
     public static final String SessionToUser = "SessionToUser";
     public static final String UserToSession = "UserToSession";
 
+    public static final String UserToHelpSession = "UserToHelpSession"; //NOTICE 记录咨询师和督导的对话CID
+
+    public static final String PatientTempScore = "PatientTempScore_";
+
+    public static final String ConsultantAvgScore = "ConsultantAvgScore"; //存储咨询师评分
+
+    public static final String ConsultantInfo = "ConsultantInfo"; //存储咨询师咨询次数
+
+
+
     private static final RedisUtils redisUtils = BeanUtils.getBean(RedisUtils.class);
 
     public static void Init(){
@@ -18,6 +28,9 @@ public class RedisTable {
         redisUtils.delete(onlineSupervisor);
         redisUtils.delete(SessionToUser);
         redisUtils.delete(UserToSession);
+        redisUtils.delete(UserToHelpSession);
+        redisUtils.delete(ConsultantAvgScore);
+        redisUtils.delete(ConsultantInfo);
 
         initRedisHashTable();
         initRedisSetTable();
@@ -38,6 +51,15 @@ public class RedisTable {
         }
         if(!redisUtils.hasKey(UserToSession)){
             redisUtils.addHash(UserToSession,"-1",-1);
+        }
+        if(!redisUtils.hasKey(UserToHelpSession)){
+            redisUtils.addHash(UserToHelpSession,"-1",-1);
+        }
+        if(!redisUtils.hasKey(ConsultantAvgScore)){
+            redisUtils.addHash(ConsultantAvgScore,"-1",-1);
+        }
+        if(!redisUtils.hasKey(ConsultantInfo)){
+            redisUtils.addHash(ConsultantInfo,"-1",-1);
         }
     }
 

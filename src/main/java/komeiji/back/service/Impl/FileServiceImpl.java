@@ -23,7 +23,6 @@ public class FileServiceImpl implements FileService {
     private static final Logger logger = LoggerFactory.getLogger(FileService.class);
 
     private static final String urlHead = "https://komeiji.cyou/file/image/";
-//    private static final String urlHead = "http://localhost:3000/";
 
     static {
         if (!uploadDir.exists() && !uploadDir.mkdirs()) {

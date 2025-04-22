@@ -1,6 +1,8 @@
 package komeiji.back.websocket.persistence.impl;
 
 import com.google.gson.*;
+import komeiji.back.entity.ChatRecord;
+import komeiji.back.repository.ChatRecordDao;
 import komeiji.back.utils.BeanUtils;
 import komeiji.back.utils.RedisUtils;
 import komeiji.back.websocket.persistence.MessageRecord;
@@ -15,6 +17,7 @@ import java.util.concurrent.CompletableFuture;
 public class RedisRecordstorage implements RecordStorage {
     private static final Gson gson = new Gson();
     private final RedisUtils redisUtils = BeanUtils.getBean(RedisUtils.class);
+    private final ChatRecordDao chatRecordDao = BeanUtils.getBean(ChatRecordDao.class);
 
     private UUID uuid;
     private Meta meta;
@@ -42,8 +45,9 @@ public class RedisRecordstorage implements RecordStorage {
             System.out.println("Key does not exist");
             return;
         }
-        System.out.println("_________-close-_________");
+        System.out.println("_______________-close-________________");
         String filePath = this.meta.getStorePath();
+//        ChatRecord crd = chatRecordDao.findById(uuid.toString());
 
         OutputStreamWriter osw = null;
         try {

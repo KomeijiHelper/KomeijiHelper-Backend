@@ -33,7 +33,9 @@ public class PersistenceHandler extends SimpleChannelInboundHandler<MessageRecor
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        WebSocketServer.getWebSocketSingleServer().getConversationManager().closeConversation(conversation);
+        if (conversation != null) {
+            WebSocketServer.getWebSocketSingleServer().getConversationManager().closeConversation(conversation);
+        }
         super.channelInactive(ctx);
     }
 
