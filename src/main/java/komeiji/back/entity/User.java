@@ -41,6 +41,8 @@ public class User {
 
     private String qualification = "";
 
+    private String emergencyContact = "";
+
     public String toString() {
         return "User{" +
                 "id=" + id +
