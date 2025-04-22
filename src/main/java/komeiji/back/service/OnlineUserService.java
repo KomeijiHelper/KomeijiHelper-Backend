@@ -10,6 +10,7 @@ import java.util.Set;
 public interface OnlineUserService {
     Set<Object> getOnlineUsers(UserClass cla);
     List<Object> getConsultants(Set<Object> result);
+    List<Object> getSupervisors(Set<Object> result);
 
 
 }

@@ -2,8 +2,10 @@ package komeiji.back.service.Impl;
 
 import jakarta.annotation.Resource;
 import komeiji.back.entity.Consultant;
+import komeiji.back.entity.User;
 import komeiji.back.entity.UserClass;
 import komeiji.back.repository.ConsultantDao;
+import komeiji.back.repository.UserDao;
 import komeiji.back.service.OnlineUserService;
 import komeiji.back.utils.RedisUtils;
 import komeiji.back.utils.RedisTable;
@@ -17,6 +19,8 @@ import java.util.Set;
 public class OnlineUserServiceImpl implements OnlineUserService {
     @Resource
     private RedisUtils redisUtils;
+    @Resource
+    private UserDao userDao;
 
     @Resource
     private ConsultantDao consultantDao;
@@ -56,8 +60,19 @@ public class OnlineUserServiceImpl implements OnlineUserService {
            }
 
        }
-
        return consultants;
+    }
+
+    @Override
+    public List<Object> getSupervisors(Set<Object> result) {
+        List<Object> supervisors = new ArrayList<>();
+       for(Object supName : result)
+       {
+           User sup =  userDao.findByUserName(supName.toString());
+           supervisors.add(new Consultant(sup.getId(),sup.getUserName(),0,0,0));
+       }
+
+       return supervisors;
     }
 
 
