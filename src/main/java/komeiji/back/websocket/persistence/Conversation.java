@@ -42,7 +42,7 @@ public class Conversation {
 
     private void start(){
         this.timeStamp = System.currentTimeMillis();
-        String storePath = String.format("%s/%s.json", sessionDirPath,timeStamp);
+        String storePath = String.format("%s/%s.json", sessionDirPath,CID);
         storage.setMeta(new Meta(CID,timeStamp,characters, storePath));
     }
 
