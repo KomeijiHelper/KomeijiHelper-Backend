@@ -11,6 +11,7 @@ public class MessageFactory {
         return switch (type) {
             case TEXT_MESSAGE -> new TextMessage(from, to, data, timestamp);
             case IMG_SRC_MESSAGE -> new TextMessage("img_src",from, to, data, timestamp);
+            case CHAT_RECORD_MESSAGE -> new TextMessage("chat_record",from, to, data, timestamp);
             case CHAT_REQUEST -> new ChatRequestMessage(from, to, data, timestamp);
             case NOTIFY_MESSAGE -> new NotifyMessage(from, to, data, timestamp);
             case CHAT_CONNECT -> new ChatConnectMessage(from, to, data, timestamp);
