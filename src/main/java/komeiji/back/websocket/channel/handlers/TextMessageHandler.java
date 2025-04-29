@@ -24,7 +24,7 @@ public class TextMessageHandler extends SimpleChannelInboundHandler<TextMessage>
         // NOTE: message has been parsed by Protocol here
         logger.debug("handler text message: {}",msg);
         ctx.fireUserEventTriggered(new MessageForwardEvent(msg));
-        MessageRecord msgRecord = new MessageRecord(msg.getFrom(),msg.getTimestamp(),"text", msg.getData());
+        MessageRecord msgRecord = new MessageRecord(msg.getFrom(),msg.getTimestamp(),msg.getType(), msg.getData());
         ctx.fireChannelRead(msgRecord);
     }
 

@@ -34,6 +34,6 @@
 //
 //    @Test
 //    public void testCheckCaptcha() {
-//        System.out.println(mailService.checkCaptcha(testEmail,EmailCaptchaType.REGISTER,"RRASIS").getMessage());
+//        System.out.println(mailService.checkaptcha(testEmail,EmailCaptchaType.REGISTER,"RRASIS").getMessage());
 //    }
 //}
