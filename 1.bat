@@ -1,0 +1,1 @@
+mvn package && scp target/komeiji-0.0.1-SNAPSHOT.jar root@komeiji.cyou:/root/komeiji/cjw
