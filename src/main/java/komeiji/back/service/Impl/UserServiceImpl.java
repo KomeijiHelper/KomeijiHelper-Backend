@@ -119,6 +119,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public int updateUserInfo(User user) {
-        return userDao.updateUserInfo(user.getNickName(), user.getEmail(), user.getId());
+        return userDao.updateUserInfo(user.getNickName(), user.getEmail(), user.getQualification(), user.getEmergencyContact(), user.getId());
     }
 }

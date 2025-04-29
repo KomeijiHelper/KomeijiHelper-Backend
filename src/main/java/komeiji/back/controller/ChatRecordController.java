@@ -182,8 +182,8 @@ public class ChatRecordController {
     }
 
     //TODO 历史聊天记录查询
-    @PostMapping("/getHistoryChat")
-    public Result getHistoryChat( HttpSession session) {
+    @GetMapping("/getHistoryChat")
+    public Result getHistoryChat(HttpSession session) {
         String userName = (String) session.getAttribute("LoginUser");
         return Result.success(chatrecordService.getHistory(userName));
     }
