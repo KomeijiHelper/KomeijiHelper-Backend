@@ -115,6 +115,7 @@ public class RedisUtils {
         return redisTemplate.opsForList().rightPop(key);
     }
     public Long getListSize(String key){
+        System.out.println("I'm in");
         return redisTemplate.opsForList().size(key);
     }
     public List<Object> getList(String key){
@@ -151,6 +152,9 @@ public class RedisUtils {
     }
     public Object getHash(String table,String key){
         return redisTemplate.opsForHash().get(table,key);
+    }
+    public Long getHashSize(String table){
+        return redisTemplate.opsForHash().size(table);
     }
     public Boolean hasHashKey(String table,String key){
         return redisTemplate.opsForHash().hasKey(table,key);
