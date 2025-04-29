@@ -24,7 +24,7 @@ public interface UserDao extends JpaRepository<User,Long>{
 
     @Modifying
     @Transactional
-    @Query("update User u set u.userClass = ?1,u.email = ?2 where u.id = ?3")
+    @Query("update User u set u.userClass = ?1,u.email = ?2,u.nickName =?3 where u.id = ?4")
     int updateUser( @Param("1") UserClass userClass, @Param("2") String email, @Param("3") String nickName, @Param("4") long id);
 
     @Modifying
