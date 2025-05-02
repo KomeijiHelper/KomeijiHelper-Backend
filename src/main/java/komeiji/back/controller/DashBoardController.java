@@ -9,7 +9,7 @@ import komeiji.back.repository.ConsultantDao;
 import komeiji.back.repository.UserDao;
 import komeiji.back.service.DashBoardService;
 import komeiji.back.utils.Result;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,7 +31,7 @@ public class DashBoardController {
 
 
     //TODO: 管理员需要获取过去十四天每天的聊天记录总数
-    @PostMapping("/consultant/chatRecordCount")
+    @GetMapping("/consultant/chatRecordCount")
     public Result getChatRecordCount(HttpSession session) {
         User user = userDao.findByUserName((String) session.getAttribute("LoginUser"));
         if(user.getUserClass() != UserClass.Assistant && user.getUserClass() != UserClass.Supervisor)
@@ -41,7 +41,7 @@ public class DashBoardController {
 
         List<Integer> chatRecordCountList = new ArrayList<>();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        for (int i = 7; i >= 0; i--) {
+        for (int i = 6; i >= 0; i--) {
             LocalDate date = LocalDate.now().minusDays(i);
             String dateStr = date.format(formatter);
             int count = dashBoardService.getOneDayTotalRecord(user,dateStr);
@@ -50,8 +50,8 @@ public class DashBoardController {
     return Result.success(chatRecordCountList);
     }
 
-    @PostMapping("/consultant/getInfo")
-    public Result  getInfo(HttpSession session) {
+    @GetMapping("/consultant/getInfo")
+    public Result getInfo(HttpSession session) {
         User user = userDao.findByUserName((String) session.getAttribute("LoginUser"));
         if(user.getUserClass() != UserClass.Assistant)
         {
@@ -65,7 +65,7 @@ public class DashBoardController {
         return Result.success(info);
     }
 
-    @PostMapping("/manager/userCount")
+    @GetMapping("/manager/userCount")
     public Result getUserCount(HttpSession session) {
         User user = userDao.findByUserName((String) session.getAttribute("LoginUser"));
         if (user.getUserClass() != UserClass.Manager) {
@@ -75,7 +75,7 @@ public class DashBoardController {
         Map<String,Integer> userCountMap = dashBoardService.getUserCount();
         return Result.success(userCountMap);
     }
-    @PostMapping("/manager/onlineUserCount")
+    @GetMapping("/manager/onlineUserCount")
     public Result getOnlineUserCount(HttpSession session) {
         User user = userDao.findByUserName((String) session.getAttribute("LoginUser"));
         if (user.getUserClass() != UserClass.Manager) {
