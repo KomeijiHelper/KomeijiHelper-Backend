@@ -1,13 +1,12 @@
 package komeiji.back.repository;
 
 import jakarta.transaction.Transactional;
-import komeiji.back.entity.UserClass;
-import org.springframework.data.jpa.repository.JpaRepository;
 import komeiji.back.entity.ChatRecord;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.*;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -41,6 +40,10 @@ public interface ChatRecordDao extends JpaRepository<ChatRecord, Long> {
     @Transactional
     @Query("select cr from ChatRecord cr where cr.patientName = ?1 or cr.consultantName = ?1")
     List<ChatRecord> getAllChatRecordByUserName(@Param("1") String userName);
+
+    @Transactional
+    @Query("select count(cr) from ChatRecord cr where cr.timeStamp >= ?1 and cr.timeStamp <= ?2 and (?3 is null or cr.consultantName = ?3)")
+    int getOneDayTotalRecord(@Param("1")String start,@Param("2")String end,@Param("3")String consultantName);
 
 
 

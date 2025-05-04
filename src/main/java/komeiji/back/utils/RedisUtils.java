@@ -2,16 +2,14 @@ package komeiji.back.utils;
 
 
 import jakarta.annotation.Resource;
-import org.jetbrains.annotations.TestOnly;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -115,6 +113,7 @@ public class RedisUtils {
         return redisTemplate.opsForList().rightPop(key);
     }
     public Long getListSize(String key){
+        System.out.println("I'm in");
         return redisTemplate.opsForList().size(key);
     }
     public List<Object> getList(String key){
@@ -151,6 +150,9 @@ public class RedisUtils {
     }
     public Object getHash(String table,String key){
         return redisTemplate.opsForHash().get(table,key);
+    }
+    public Long getHashSize(String table){
+        return redisTemplate.opsForHash().size(table);
     }
     public Boolean hasHashKey(String table,String key){
         return redisTemplate.opsForHash().hasKey(table,key);

@@ -1,15 +1,14 @@
 package komeiji.back.service.Impl;
 
+import jakarta.annotation.Resource;
 import komeiji.back.entity.Consultant;
+import komeiji.back.entity.User;
 import komeiji.back.entity.UserClass;
 import komeiji.back.repository.ChatRecordDao;
 import komeiji.back.repository.ConsultantDao;
-import komeiji.back.service.UserService;
 import komeiji.back.repository.UserDao;
-import komeiji.back.entity.User;
+import komeiji.back.service.UserService;
 import komeiji.back.utils.MD5Utils;
-
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 import java.security.NoSuchAlgorithmException;

@@ -14,7 +14,14 @@ public class ConToSup {
 
     private Long supervisorId;
 
-    public ConToSup() {}
+    public ConToSup() {
+
+    }
+
+    public ConToSup(Long consultantId, Long supervisorId) {
+        this.consultantId = consultantId;
+        this.supervisorId = supervisorId;
+    }
 
 
 }

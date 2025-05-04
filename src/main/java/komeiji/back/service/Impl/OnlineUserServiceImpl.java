@@ -7,8 +7,8 @@ import komeiji.back.entity.UserClass;
 import komeiji.back.repository.ConsultantDao;
 import komeiji.back.repository.UserDao;
 import komeiji.back.service.OnlineUserService;
-import komeiji.back.utils.RedisUtils;
 import komeiji.back.utils.RedisTable;
+import komeiji.back.utils.RedisUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
