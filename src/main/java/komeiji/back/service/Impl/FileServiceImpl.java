@@ -20,11 +20,10 @@ public class FileServiceImpl implements FileService {
 
     private static final Tika tika = new Tika();
 
-    private static final File uploadDir = new File("C:\\Users\\Public\\Music");
+    private static final File uploadDir = new File("/var/www/file/image");
     private static final Logger logger = LoggerFactory.getLogger(FileService.class);
 
-//    private static final String urlHead = "https://komeiji.cyou/files/image/";
-    private static final String urlHead = "http://localhost:3000/";
+    private static final String urlHead = "https://komeiji.cyou/file/image/";
 
     static {
         if (!uploadDir.exists() && !uploadDir.mkdirs()) {
