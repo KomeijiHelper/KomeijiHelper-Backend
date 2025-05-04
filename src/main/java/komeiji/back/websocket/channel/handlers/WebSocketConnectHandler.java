@@ -1,30 +1,24 @@
 package komeiji.back.websocket.channel.handlers;
+
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import komeiji.back.entity.User;
 import komeiji.back.entity.UserClass;
 import komeiji.back.repository.UserDao;
+import komeiji.back.utils.BeanUtils;
+import komeiji.back.utils.RedisTable;
+import komeiji.back.utils.RedisUtils;
 import komeiji.back.websocket.WebSocketServer;
 import komeiji.back.websocket.channel.Attributes;
 import komeiji.back.websocket.channel.events.handler.EventHandler;
 import komeiji.back.websocket.channel.events.handler.HandShakeCompleteEventHandler;
 import komeiji.back.websocket.persistence.Conversation;
-import komeiji.back.websocket.persistence.ConversationManager;
-import komeiji.back.websocket.persistence.impl.MockRecordstorage;
+import komeiji.back.websocket.persistence.ConversationUtils;
 import komeiji.back.websocket.persistence.impl.RedisRecordstorage;
-import komeiji.back.websocket.protocol.ProtocolUtils;
-import komeiji.back.websocket.protocol.WebSocketFrameProtocol;
 import komeiji.back.websocket.session.OneWayChatSession;
 import komeiji.back.websocket.session.Session;
 import komeiji.back.websocket.session.SessionToken;
-
-import komeiji.back.utils.RedisUtils;
-import komeiji.back.utils.RedisTable;
-import komeiji.back.utils.BeanUtils;
-
-import komeiji.back.websocket.persistence.ConversationUtils;
 import komeiji.back.websocket.utils.Utils;
 
 import java.util.Map;

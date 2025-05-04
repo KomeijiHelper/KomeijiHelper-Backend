@@ -8,15 +8,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import komeiji.back.entity.enum_entity.ConsultRequestStatus;
 import komeiji.back.service.ConsultService;
-import komeiji.back.utils.RedisTable;
 import komeiji.back.utils.RedisUtils;
 import komeiji.back.utils.Result;
 import komeiji.back.websocket.message.Message;
 import komeiji.back.websocket.message.MessageFactory;
 import komeiji.back.websocket.message.MessageType;
+import komeiji.back.websocket.session.SessionToken;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,8 +25,6 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-
-import komeiji.back.websocket.session.SessionToken;
 
 import static komeiji.back.websocket.utils.Utils.sendMessageInUserSession;
 

@@ -1,18 +1,10 @@
 package komeiji.back.websocket.channel.handlers;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
-import komeiji.back.websocket.WebSocketServer;
-import komeiji.back.websocket.channel.Attributes;
 import komeiji.back.websocket.channel.events.MessageForwardEvent;
-import komeiji.back.websocket.message.MessageType;
 import komeiji.back.websocket.message.impl.TextMessage;
 import komeiji.back.websocket.persistence.MessageRecord;
-import komeiji.back.websocket.session.Session;
-import komeiji.back.websocket.session.SessionToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

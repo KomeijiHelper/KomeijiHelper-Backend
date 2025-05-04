@@ -2,7 +2,6 @@ package komeiji.back.service;
 
 import komeiji.back.entity.User;
 
-import java.util.List;
 import java.util.Map;
 
 public interface DashBoardService {

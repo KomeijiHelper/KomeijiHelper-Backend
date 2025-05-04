@@ -15,7 +15,6 @@ import komeiji.back.repository.UserDao;
 import komeiji.back.service.ChatRecordService;
 import komeiji.back.utils.RedisTable;
 import komeiji.back.utils.RedisUtils;
-import komeiji.back.utils.Result;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

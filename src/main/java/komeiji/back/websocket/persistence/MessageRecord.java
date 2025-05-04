@@ -1,7 +1,5 @@
 package komeiji.back.websocket.persistence;
 
-import komeiji.back.websocket.message.Message;
-import komeiji.back.websocket.message.impl.TextMessage;
 import komeiji.back.websocket.session.SessionToken;
 
 public class MessageRecord {

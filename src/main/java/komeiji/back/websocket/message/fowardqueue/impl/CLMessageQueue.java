@@ -3,9 +3,7 @@ package komeiji.back.websocket.message.fowardqueue.impl;
 import komeiji.back.websocket.WebSocketServer;
 import komeiji.back.websocket.message.Message;
 import komeiji.back.websocket.message.fowardqueue.MessageForwardQueue;
-import komeiji.back.websocket.persistence.ConversationManager;
 import komeiji.back.websocket.session.Session;
-import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

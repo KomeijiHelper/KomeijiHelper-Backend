@@ -6,7 +6,6 @@ import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import komeiji.back.websocket.message.Message;
 import komeiji.back.websocket.message.MessageFactory;
 import komeiji.back.websocket.message.MessageType;
-import komeiji.back.websocket.message.impl.TextMessage;
 import komeiji.back.websocket.protocol.TextFrameProtocol;
 import komeiji.back.websocket.session.Session;
 
