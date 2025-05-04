@@ -39,6 +39,19 @@ public class DashBoardServiceImpl implements DashBoardService {
     }
 
     @Override
+    public int getPeriodTotalRecord(User user, String startDate, String endDate) {
+        String start = startDate + " 00:00:00";
+        String end = endDate + " 23:59:59";
+
+        //NOTICE 如果user为null 代表获取date当天所有的记录
+        if(user == null)
+            return chatRecordDao.getOneDayTotalRecord(startDate, endDate,null);
+
+        return chatRecordDao.getOneDayTotalRecord(startDate, endDate,user.getUserName());
+
+    }
+
+    @Override
     public Map<String,Integer> getUserCount() {
         int normal_total = userdao.getUserCount(UserClass.Normal);
         int consultant_total = userdao.getUserCount(UserClass.Assistant);

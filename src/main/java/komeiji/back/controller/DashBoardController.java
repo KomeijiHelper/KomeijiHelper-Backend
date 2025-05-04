@@ -2,6 +2,7 @@ package komeiji.back.controller;
 
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpSession;
+import komeiji.back.dto.PeriodDTO;
 import komeiji.back.entity.Consultant;
 import komeiji.back.entity.User;
 import komeiji.back.entity.UserClass;
@@ -10,6 +11,7 @@ import komeiji.back.repository.UserDao;
 import komeiji.back.service.DashBoardService;
 import komeiji.back.utils.Result;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -84,5 +86,20 @@ public class DashBoardController {
         Map<String,Long> onlineUserCountMap = dashBoardService.getOnlineUserCount();
         return Result.success(onlineUserCountMap);
     }
+
+    @GetMapping("/consultant/period/chatRecordCount")
+    public Result getPeriodChatRecordCount(HttpSession session,@RequestBody PeriodDTO period) {
+        System.out.println(period);
+        User user = userDao.findByUserName((String) session.getAttribute("LoginUser"));
+        if(user.getUserClass() != UserClass.Assistant && user.getUserClass() != UserClass.Supervisor){
+            return Result.error("407","权限不足");
+        }
+
+        int count = dashBoardService.getPeriodTotalRecord(user, period.getStart(), period.getEnd());
+
+        return Result.success(count);
+    }
+
+
 
 }
