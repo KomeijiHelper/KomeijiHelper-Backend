@@ -10,10 +10,7 @@ import komeiji.back.entity.UserClass;
 import komeiji.back.repository.UserDao;
 import komeiji.back.service.BindSupervisorService;
 import komeiji.back.utils.Result;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/bind_supervisor")
@@ -41,7 +38,7 @@ public class BindSupervisorController {
         return Result.success();
     }
 
-    @PostMapping("/consultant/check")
+    @GetMapping("/consultant/check")
     public Result checkSupervisor(HttpSession session) {
         long conId = (long) session.getAttribute("Id");
         User con_user = userDao.findById(conId);
@@ -52,8 +49,7 @@ public class BindSupervisorController {
         }
         else{
             User sup_user = userDao.findById((long)contosup.getSupervisorId());
-            sup_user.setPassword("*******");
-            return Result.success(sup_user);
+            return Result.success(sup_user.getUserName());
         }
     }
 
