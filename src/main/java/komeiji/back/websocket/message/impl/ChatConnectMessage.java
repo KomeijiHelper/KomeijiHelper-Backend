@@ -1,6 +1,5 @@
 package komeiji.back.websocket.message.impl;
 
-import com.google.gson.Gson;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import komeiji.back.websocket.session.SessionToken;
 

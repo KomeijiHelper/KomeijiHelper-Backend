@@ -28,11 +28,31 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import komeiji.back.entity.User;
+import komeiji.back.entity.UserClass;
+import komeiji.back.repository.UserDao;
+import komeiji.back.service.EmailCodeStatus;
+import komeiji.back.service.MailService;
+import komeiji.back.service.UserService;
+import komeiji.back.utils.*;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Tag(name = "用户基本功能", description = "用户基本功能接口")
 @RestController
@@ -126,7 +146,6 @@ public class UserController {
     @GetMapping("/test")
     @Operation(summary = "测试接口", description = "测试接口")
     public String test(HttpServletRequest request) throws IOException, IllegalAccessException {
-//        System.out.println(request.getHeaders());
         String a = "abdfda";
         String b = "jkfadjlk";
 

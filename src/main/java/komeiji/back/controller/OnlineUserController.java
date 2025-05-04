@@ -3,17 +3,16 @@ package komeiji.back.controller;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import komeiji.back.entity.Consultant;
+import komeiji.back.controller.UserController.UserClassRequest;
 import komeiji.back.entity.UserClass;
 import komeiji.back.service.OnlineUserService;
 import komeiji.back.utils.Result;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-
-import komeiji.back.controller.UserController.UserClassRequest;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -43,7 +42,6 @@ public class OnlineUserController {
         else{
             //NOTICE 从redis和数据库中获取在线用户
             List<Object> consultants = onlineUserService.getConsultants(result);
-//            System.out.println(consultants);
             return Result.success(consultants);
         }
     }

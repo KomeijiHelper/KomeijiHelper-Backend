@@ -1,13 +1,13 @@
 package komeiji.back.repository;
 
 import jakarta.transaction.Transactional;
+import komeiji.back.entity.User;
 import komeiji.back.entity.UserClass;
 import org.springframework.data.jpa.repository.JpaRepository;
-import komeiji.back.entity.User;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.*;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 

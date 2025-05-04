@@ -6,6 +6,7 @@ import komeiji.back.websocket.persistence.meta.Meta;
 import komeiji.back.websocket.session.SessionToken;
 import lombok.Getter;
 import lombok.Setter;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;

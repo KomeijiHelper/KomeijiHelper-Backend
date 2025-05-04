@@ -1,8 +1,6 @@
 package komeiji.back.controller;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -13,11 +11,9 @@ import komeiji.back.entity.UserClass;
 import komeiji.back.repository.ChatRecordDao;
 import komeiji.back.repository.UserDao;
 import komeiji.back.service.ChatRecordService;
+import komeiji.back.utils.RedisTable;
 import komeiji.back.utils.RedisUtils;
 import komeiji.back.utils.Result;
-import komeiji.back.utils.RedisTable;
-
-
 import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,8 +21,6 @@ import java.io.*;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 @RestController
