@@ -51,3 +51,5 @@ target/
 src/main/resources/application-local.yaml
 
 chats/
+
+1.bat
