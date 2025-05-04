@@ -6,6 +6,7 @@ import jakarta.mail.internet.MimeMessage;
 import komeiji.back.service.EmailCaptchaType;
 import komeiji.back.service.EmailCodeStatus;
 import komeiji.back.service.MailService;
+import komeiji.back.utils.RandomUtils;
 import komeiji.back.utils.RedisUtils;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -18,31 +19,10 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
-
 import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.util.concurrent.TimeUnit;
 
-class RandomUtils {
-    private static final Logger logger = LoggerFactory.getLogger(RandomUtils.class);
-    private static final String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-    public static String randomCode(String algorithm,int length) {
-        SecureRandom randomBuilder;
-        try {
-            randomBuilder = SecureRandom.getInstance(algorithm);
-        } catch (NoSuchAlgorithmException e) {
-            logger.warn(e.getMessage());
-            return null;
-        }
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < length; i++) {
-            sb.append(chars.charAt(randomBuilder.nextInt(chars.length())));
-        }
-        return sb.toString();
-    }
-}
 
 @Service
 public class MailServiceImpl implements MailService {
@@ -73,7 +53,10 @@ public class MailServiceImpl implements MailService {
     }
 
 
-    public EmailCodeStatus sendResetPasswordMail(String to, String subject, String name) {
+    public EmailCodeStatus sendResetPasswordMail(String to, String subject, String name,String password) {
+        if(password == null) {
+            return EmailCodeStatus.VERIFICATION_CODE_GENERATION_FAILED;
+        }
         MimeMessage mimeMessage = mailSender.createMimeMessage();
 
         try {
@@ -82,11 +65,7 @@ public class MailServiceImpl implements MailService {
 
             Context context = new Context();
             context.setVariable("name", name);
-            String code = RandomUtils.randomCode("SHA1PRNG",8);
-            if(code == null) {
-                return EmailCodeStatus.VERIFICATION_CODE_GENERATION_FAILED;
-            }
-            context.setVariable("password", code);
+            context.setVariable("password", password);
 
             String emailContent = templateEngine.process("mail-template-resetPassword", context);
             mimeMessageHelper.setText(emailContent, true);

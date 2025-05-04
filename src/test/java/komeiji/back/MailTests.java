@@ -23,7 +23,7 @@ public class MailTests {
 
     @Test
     public void testResetPassword() {
-        System.out.println(mailService.sendResetPasswordMail(testEmail,"重置密码","Tof").getMessage());
+        System.out.println(mailService.sendResetPasswordMail(testEmail,"重置密码","Tof","123456").getMessage());
     }
 
     @Test

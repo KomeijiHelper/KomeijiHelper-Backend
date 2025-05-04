@@ -11,6 +11,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import komeiji.back.entity.UserClass;
 import komeiji.back.repository.UserDao;
+import komeiji.back.service.EmailCodeStatus;
+import komeiji.back.service.MailService;
 import komeiji.back.service.UserService;
 import komeiji.back.entity.User;
 import komeiji.back.utils.*;
@@ -44,6 +46,9 @@ public class UserController {
 
     @Resource
     UserDao userdao;
+
+    @Resource
+    MailService mailService;
 
     public static HashMap<String,HttpSession> sessions = new HashMap<>();
 
@@ -104,7 +109,7 @@ public class UserController {
 
             return Result.success(newUser.getUserName(), "注册成功");
         } else {
-            return Result.error(456, "注册失败", response);
+            return Result.error(456, "用户名重复", response);
         }
     }
 
@@ -245,11 +250,13 @@ public class UserController {
         User loginUser = userService.getUserById((long) session.getAttribute("Id"));
         User wantedUser = userService.getUserById(userId);
         if (loginUser.getId() == userId || loginUser.getUserClass() == UserClass.Manager) {
-            int result = userService.updatePassword(wantedUser, "123456");
-            if (result == 0) {
-                return Result.error("-2", "修改失败");
-            } else {
+            String password = RandomUtils.randomCode("SHA1PRNG",8);
+            int result = userService.updatePassword(wantedUser, password);
+            EmailCodeStatus status = mailService.sendResetPasswordMail(wantedUser.getEmail(),"重置密码", wantedUser.getUserName(),password);
+            if (result > 0 && status == EmailCodeStatus.SUCCESS) {
                 return Result.success("修改成功");
+            } else {
+                return Result.error("-2", String.format("修改失败：%s",status.getMessage()));
             }
         } else return Result.error("-1", "不能修改其他用户的密码");
     }
