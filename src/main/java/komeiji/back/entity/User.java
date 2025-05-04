@@ -33,8 +33,8 @@ public class User {
     private UserClass userClass = UserClass.Normal;
 
     @Schema(description = "邮箱",example = "admin@example.com")
-    @Column(unique = true)
-    private String email = "";
+    @Column(unique = true,nullable = true)
+    private String email = null;
 
     @Schema(description = "用户昵称")
     private String nickName = ""; //用户昵称
