@@ -36,4 +36,8 @@ public interface UserDao extends JpaRepository<User,Long>{
     @Transactional
     @Query("update User u set u.nickName = ?1, u.email =?2, u.qualification =?3, u.emergencyContact =?4 where u.id =?5")
     int updateUserInfo(@Param("1") String nickName, @Param("2") String email, @Param("3") String qualification, @Param("4") String emergencyContact, @Param("5") long id);
+
+    @Transactional
+    @Query("select count(u) from User u where u.userClass = ?1")
+    int getUserCount(@Param("1") UserClass userClass);
 }
