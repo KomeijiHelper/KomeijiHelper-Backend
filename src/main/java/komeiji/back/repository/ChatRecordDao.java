@@ -42,6 +42,10 @@ public interface ChatRecordDao extends JpaRepository<ChatRecord, Long> {
     @Query("select cr from ChatRecord cr where cr.patientName = ?1 or cr.consultantName = ?1")
     List<ChatRecord> getAllChatRecordByUserName(@Param("1") String userName);
 
+    @Transactional
+    @Query("select count(cr) from ChatRecord cr where cr.timeStamp >= ?1 and cr.timeStamp <= ?2 and (?3 is null or cr.consultantName = ?3)")
+    int getOneDayTotalRecord(@Param("1")String start,@Param("2")String end,@Param("3")String consultantName);
+
 
 
 }
