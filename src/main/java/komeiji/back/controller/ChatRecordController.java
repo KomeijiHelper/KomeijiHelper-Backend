@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.*;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.LinkedList;
 import java.util.List;
@@ -129,30 +130,20 @@ public class ChatRecordController {
         }
 
         // 清空 response
-        response.reset();
         response.setCharacterEncoding("UTF-8");
 
         response.addHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(file.getName(), "UTF-8"));
         response.setContentType("application/octet-stream");
+        response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
 
         // 将文件读到输入流中
-        try (InputStream is = new BufferedInputStream(Files.newInputStream(file.toPath()))) {
-
-            OutputStream outputStream = new BufferedOutputStream(response.getOutputStream());
-
-            byte[] buffer = new byte[1024];
-            int len;
-
-            //从输入流中读取一定数量的字节，并将其存储在缓冲区字节数组中，读到末尾返回-1
-            while ((len = is.read(buffer)) > 0) {
-                outputStream.write(buffer, 0, len);
-            }
-            outputStream.close();
-
+        try{
+            readChatFile(file,response.getOutputStream());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return Result.success();
+        // no return when successfully download
+        return null;
     }
 
     @GetMapping("/getTempChat")
@@ -188,4 +179,52 @@ public class ChatRecordController {
         return Result.success(chatrecordService.getHistory(userName));
     }
 
+
+    @GetMapping("/getChatContent")
+    public Result getChatContent(@Param("fileId") String fileId,HttpSession session,HttpServletResponse response) {
+        String UserName = (String) session.getAttribute("LoginUser");
+        User loginUser = userdao.findByUserName(UserName);
+        ChatRecord crd = chatrecordDao.findById(fileId);
+
+        if (crd == null) {
+            return Result.error("409", "未找到该聊天记录");
+        }
+
+        if (!crd.getConsultantName().equals(UserName) && !crd.getPatientName().equals(loginUser.getUserName()) && !loginUser.getUserClass().equals(UserClass.Manager)) {
+            return Result.error("410", "无权下载该文件");
+        }
+
+        File file = new File(crd.getFilePath());
+
+        if (!file.exists()) {
+            return Result.error("411", "文件不存在");
+        }
+
+        // 清空 response
+        response.setCharacterEncoding("UTF-8");
+
+        response.setContentType("application/json");
+
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        try{
+            readChatFile(file,os);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return Result.success(os.toString(StandardCharsets.UTF_8));
+    }
+
+    private void readChatFile(File file,OutputStream os) throws IOException {
+        InputStream is = new BufferedInputStream(Files.newInputStream(file.toPath()));
+        byte[] buffer = new byte[1024];
+        int len;
+
+        //从输入流中读取一定数量的字节，并将其存储在缓冲区字节数组中，读到末尾返回-1
+        while ((len = is.read(buffer)) > 0) {
+            os.write(buffer, 0, len);
+        }
+        os.flush();
+        os.close();
+    }
 }

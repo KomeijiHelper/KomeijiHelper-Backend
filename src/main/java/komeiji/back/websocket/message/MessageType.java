@@ -7,6 +7,7 @@ public enum MessageType {
 
     // subtype of text
     IMG_SRC_MESSAGE,
+    CHAT_RECORD_MESSAGE,
     NOTIFY_MESSAGE,
     CHAT_REQUEST,
     CHAT_CONNECT,
@@ -19,6 +20,7 @@ public enum MessageType {
         return switch (text.toLowerCase()) {
             case "text" -> TEXT_MESSAGE;
             case "img_src" -> IMG_SRC_MESSAGE;
+            case "chat_record" -> CHAT_RECORD_MESSAGE;
             case "binary" -> BINARY_MESSAGE;
             case "chat_request" -> CHAT_REQUEST;
             case "chat_connect" -> CHAT_CONNECT;
