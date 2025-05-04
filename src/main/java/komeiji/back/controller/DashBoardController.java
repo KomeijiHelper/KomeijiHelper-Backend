@@ -100,6 +100,29 @@ public class DashBoardController {
         return Result.success(count);
     }
 
+    @GetMapping("/consultant/period/chatRecord")
+    public Result getPeriodChatRecord(HttpSession session,@RequestBody PeriodDTO period) {
+        User user = userDao.findByUserName((String) session.getAttribute("LoginUser"));
+        if(user.getUserClass() != UserClass.Assistant && user.getUserClass() != UserClass.Supervisor)
+        {
+            return Result.error("407","权限不足");
+        }
+
+        List<Integer> chatRecordCountList = new ArrayList<>();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        LocalDate start = LocalDate.parse(period.getStart(), formatter);
+        LocalDate end = LocalDate.parse(period.getEnd(), formatter);
+
+        for (LocalDate date = start; !date.isAfter(end); date = date.plusDays(1)) {
+            String formatted = date.format(formatter);
+            int count = dashBoardService.getOneDayTotalRecord(user,formatted);
+            chatRecordCountList.add(count);
+        }
+        return Result.success(chatRecordCountList);
+
+    }
+
 
 
 }
