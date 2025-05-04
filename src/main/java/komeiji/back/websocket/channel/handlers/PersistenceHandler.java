@@ -5,7 +5,6 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import komeiji.back.websocket.WebSocketServer;
 import komeiji.back.websocket.channel.Attributes;
-import komeiji.back.websocket.message.Message;
 import komeiji.back.websocket.persistence.Conversation;
 import komeiji.back.websocket.persistence.MessageRecord;
 import org.slf4j.Logger;

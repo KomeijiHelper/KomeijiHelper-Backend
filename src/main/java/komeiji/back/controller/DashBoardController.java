@@ -10,10 +10,7 @@ import komeiji.back.repository.ConsultantDao;
 import komeiji.back.repository.UserDao;
 import komeiji.back.service.DashBoardService;
 import komeiji.back.utils.Result;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -43,7 +40,8 @@ public class DashBoardController {
 
         List<Integer> chatRecordCountList = new ArrayList<>();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        for (int i = 6; i >= 0; i--) {
+        // fix bug
+        for (int i = 7; i > 0; i--) {
             LocalDate date = LocalDate.now().minusDays(i);
             String dateStr = date.format(formatter);
             int count = dashBoardService.getOneDayTotalRecord(user,dateStr);
@@ -100,7 +98,7 @@ public class DashBoardController {
         return Result.success(count);
     }
 
-    @GetMapping("/consultant/period/chatRecord")
+    @PostMapping("/consultant/period/chatRecord")
     public Result getPeriodChatRecord(HttpSession session,@RequestBody PeriodDTO period) {
         User user = userDao.findByUserName((String) session.getAttribute("LoginUser"));
         if(user.getUserClass() != UserClass.Assistant && user.getUserClass() != UserClass.Supervisor)

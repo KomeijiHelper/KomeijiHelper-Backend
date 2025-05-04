@@ -6,10 +6,10 @@ import komeiji.back.entity.UserClass;
 import komeiji.back.repository.ChatRecordDao;
 import komeiji.back.repository.UserDao;
 import komeiji.back.service.DashBoardService;
+import komeiji.back.utils.RedisTable;
 import komeiji.back.utils.RedisUtils;
 import org.springframework.stereotype.Service;
-import komeiji.back.utils.RedisTable;
-import java.util.List;
+
 import java.util.Map;
 
 @Service

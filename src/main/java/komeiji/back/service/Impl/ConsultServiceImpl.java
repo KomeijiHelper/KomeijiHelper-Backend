@@ -10,16 +10,14 @@ import komeiji.back.repository.ChatRecordDao;
 import komeiji.back.repository.ConsultantDao;
 import komeiji.back.repository.UserDao;
 import komeiji.back.service.ConsultService;
-import komeiji.back.utils.Result;
+import komeiji.back.utils.RedisTable;
+import komeiji.back.utils.RedisUtils;
 import komeiji.back.websocket.message.Message;
 import komeiji.back.websocket.message.MessageFactory;
 import komeiji.back.websocket.message.MessageType;
+import komeiji.back.websocket.persistence.ConversationUtils;
 import komeiji.back.websocket.session.SessionToken;
 import org.springframework.stereotype.Service;
-
-import static komeiji.back.websocket.utils.Utils.sendMessageInUserSession;
-import komeiji.back.websocket.persistence.ConversationUtils;
-import komeiji.back.utils.RedisUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
@@ -30,7 +28,7 @@ import java.util.HexFormat;
 import java.util.Map;
 import java.util.UUID;
 
-import komeiji.back.utils.RedisTable;
+import static komeiji.back.websocket.utils.Utils.sendMessageInUserSession;
 
 @Service
 public class ConsultServiceImpl implements ConsultService {

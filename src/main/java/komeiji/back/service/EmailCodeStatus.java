@@ -8,9 +8,9 @@ public enum EmailCodeStatus {
     SUCCESS(100, "发送成功"),
 
     // 发送限制相关状态码
-    RATE_LIMIT_EXCEEDED(200, "发送频率太快，1分钟内只能发送一次"),
-    SEND_LIMIT_REACHED(201, "达到发送限制，请稍后再试"),
-    SEND_BLOCKED(202, "发送请求已被禁止（邮箱被封禁）"),
+    RATE_LIMIT_EXCEEDED(201, "发送频率太快，1分钟内只能发送一次"),
+    SEND_LIMIT_REACHED(202, "达到发送限制，请稍后再试"),
+    SEND_BLOCKED(203, "发送请求已被禁止（邮箱被封禁）"),
 
     // 验证码有效性相关状态码
     CODE_VERIFIED(300, "验证码认证成功"),

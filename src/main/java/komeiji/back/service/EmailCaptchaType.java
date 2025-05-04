@@ -5,7 +5,8 @@ import lombok.Getter;
 @Getter
 public enum EmailCaptchaType {
     REGISTER("register","注册账号"),
-    RESET_PASSWORD("resetPwd","重置密码");
+    RESET_PASSWORD("resetPwd","重置密码"),
+    CHANGE_PASSWORD("changePwd","修改密码");
 
 
     private final String value;
