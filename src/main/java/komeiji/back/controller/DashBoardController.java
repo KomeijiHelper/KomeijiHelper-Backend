@@ -41,7 +41,7 @@ public class DashBoardController {
         List<Integer> chatRecordCountList = new ArrayList<>();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         // fix bug
-        for (int i = 7; i > 0; i--) {
+        for (int i = 6; i >= 0; i--) {
             LocalDate date = LocalDate.now().minusDays(i);
             String dateStr = date.format(formatter);
             int count = dashBoardService.getOneDayTotalRecord(user,dateStr);

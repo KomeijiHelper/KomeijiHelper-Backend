@@ -19,7 +19,6 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
-
 import java.io.UnsupportedEncodingException;
 import java.util.concurrent.TimeUnit;
 
