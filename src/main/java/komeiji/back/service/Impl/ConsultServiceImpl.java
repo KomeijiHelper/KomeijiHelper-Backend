@@ -28,6 +28,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HexFormat;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import komeiji.back.utils.RedisTable;
@@ -86,7 +87,12 @@ public class ConsultServiceImpl implements ConsultService {
 //        Message reject_patient = MessageFactory.newTextMessage(MessageType.)
     }
 
+    @Override
+    public boolean checkBusy(String consultant) {
+        Set<Object> busy = redisUtils.getHashKeys(RedisTable.UserToSession);
+        return !busy.contains(consultant);
 
+    }
 
 
     public void StoreChatRecord(String patient_token,String consultant_token,String consultant_name,String patient_name,String time)

@@ -46,8 +46,13 @@ public class OnlineUserServiceImpl implements OnlineUserService {
     @Override
     public List<Object> getConsultants(Set<Object> result) {
         List<Object> consultants = new ArrayList<>();
+        Set<Object> busy = redisUtils.getHashKeys(RedisTable.UserToSession);
+
        for(Object conName : result)
        {
+           if(busy.contains(conName)){
+               continue;
+           }
            System.out.println(conName.toString());
            if(redisUtils.hasHashKey(RedisTable.ConsultantInfo,conName.toString())){
                consultants.add(redisUtils.getHash(RedisTable.ConsultantInfo,conName.toString()));
@@ -66,8 +71,13 @@ public class OnlineUserServiceImpl implements OnlineUserService {
     @Override
     public List<Object> getSupervisors(Set<Object> result) {
         List<Object> supervisors = new ArrayList<>();
+        Set<Object> busy = redisUtils.getHashKeys(RedisTable.UserToSession);
        for(Object supName : result)
        {
+           if(busy.contains(supName)){
+               continue;
+           }
+
            User sup =  userDao.findByUserName(supName.toString());
            supervisors.add(new Consultant(sup.getId(),sup.getUserName(),0,0,0));
        }

@@ -68,12 +68,11 @@ public class ConsultController {
         if(requestStatus_map.containsKey(Login_user)) {
             return Result.error("405","您已有其他请求，请等待处理");
         }
-//        if(redisUtils.hasHashKey(RedisTable.SessionToUser,Login_user)) {
-//            return Result.error("410","您当前正在进行咨询，请结束后再尝试");
-//        }
-//        if(redisUtils.hasHashKey(RedisTable.SessionToUser,consult_id)) {
-//            return Result.error("411","该咨询师正在工作，请稍后再试");
-//        }
+
+        if(!consultService.checkBusy(consult_id))
+        {
+            return Result.error("409","该咨询师忙碌，请稍后再试");
+        }
 
         waiters.put(Login_user, new CountDownLatch(1));
         invite_map.put(Login_user, consult_id);
