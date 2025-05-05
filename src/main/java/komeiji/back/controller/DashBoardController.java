@@ -81,7 +81,7 @@ public class DashBoardController {
         if (user.getUserClass() != UserClass.Manager) {
             return Result.error("407", "权限不足");
         }
-        Map<String,Long> onlineUserCountMap = dashBoardService.getOnlineUserCount();
+        Map<String,Integer> onlineUserCountMap = dashBoardService.getLoginUserCount();
         return Result.success(onlineUserCountMap);
     }
 
