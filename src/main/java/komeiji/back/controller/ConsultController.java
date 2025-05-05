@@ -16,11 +16,13 @@ import komeiji.back.websocket.message.MessageType;
 import komeiji.back.websocket.session.SessionToken;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
@@ -42,6 +44,18 @@ public class ConsultController {
     private ConsultService consultService;
     @Resource
     RedisUtils redisUtils;
+
+    private static final Gson gson = new Gson();
+
+    private void sendRejectMessage(String from,String to,String reason) {
+        SessionToken from_session_token = new SessionToken(from);
+        SessionToken to_session_token = new SessionToken(to);
+        Message toSupervisor = MessageFactory.newTextMessage(MessageType.CHAT_REJECT,
+                from_session_token,to_session_token,
+                gson.toJson(Map.of("cancel_id",from,"reason",reason)),
+                System.currentTimeMillis());
+        sendMessageInUserSession(toSupervisor);
+    }
 
     /**
      *
@@ -93,6 +107,7 @@ public class ConsultController {
         CountDownLatch latch = waiters.get(Login_user);
         System.out.println("开始等待------------------");
         latch.await(40000, TimeUnit.MILLISECONDS);
+        System.out.println("等待结束------------------");
 
 
 
@@ -102,6 +117,7 @@ public class ConsultController {
             case WAITING:
                 //NOTICE 超时未回复，提醒用户并返回
                 result =  Result.error("408","请求超时，请重新预约");
+                sendRejectMessage(Login_user,consult_id,"请求超时未处理");
                 break;
             case ACCEPTED:
                 //NOTICE 咨询师同意，建立连接 调用consultService
@@ -129,7 +145,7 @@ public class ConsultController {
     }
 
     @GetMapping("/cancel_request")
-    public Result<String> cancleRequest(HttpSession session, HttpServletResponse response) throws IOException {
+    public Result<String> cancelRequest(@RequestParam String consult_id, HttpSession session, HttpServletResponse response) throws IOException {
         String login_user = (String) session.getAttribute("LoginUser");
         CountDownLatch latch = waiters.get(login_user);
         if(latch == null){
@@ -139,6 +155,7 @@ public class ConsultController {
             latch.countDown();
             requestStatus_map.replace(login_user, ConsultRequestStatus.CANCELED);
             System.out.println(requestStatus_map);
+            sendRejectMessage(login_user,consult_id,"请求已被对方取消");
         }
         return Result.success("已处理");
     }
