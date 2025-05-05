@@ -10,6 +10,7 @@ public enum MessageType {
     CHAT_RECORD_MESSAGE,
     NOTIFY_MESSAGE,
     CHAT_REQUEST,
+    CHAT_REJECT,
     CHAT_CONNECT,
 
     // subtype of binary
@@ -23,6 +24,7 @@ public enum MessageType {
             case "chat_record" -> CHAT_RECORD_MESSAGE;
             case "binary" -> BINARY_MESSAGE;
             case "chat_request" -> CHAT_REQUEST;
+            case "chat_reject" -> CHAT_REJECT;
             case "chat_connect" -> CHAT_CONNECT;
             default -> throw new IllegalArgumentException("Invalid MessageType: " + text);
         };

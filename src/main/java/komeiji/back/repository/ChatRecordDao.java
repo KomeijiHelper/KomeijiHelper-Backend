@@ -38,7 +38,7 @@ public interface ChatRecordDao extends JpaRepository<ChatRecord, Long> {
 
     //NOTICE 获取用户的所有ChatRecord
     @Transactional
-    @Query("select cr from ChatRecord cr where cr.patientName = ?1 or cr.consultantName = ?1")
+    @Query("select cr from ChatRecord cr where cr.patientName = ?1 or cr.consultantName = ?1 order by cr.timeStamp desc")
     List<ChatRecord> getAllChatRecordByUserName(@Param("1") String userName);
 
     @Transactional
