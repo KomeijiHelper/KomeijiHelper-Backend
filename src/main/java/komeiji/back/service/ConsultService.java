@@ -8,5 +8,6 @@ import java.security.NoSuchAlgorithmException;
 public interface ConsultService {
     public void conenctRequest_Service(SessionToken patient,SessionToken consultant,String patient_name,String consultant_name) throws UnsupportedEncodingException, NoSuchAlgorithmException;
     public void rejectRequest_Service(SessionToken patient);
+    public boolean checkBusy(String consultant);
 
 }
