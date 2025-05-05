@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import komeiji.back.utils.RedisTable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 public class DashBoardServiceImpl implements DashBoardService {
@@ -74,8 +75,11 @@ public class DashBoardServiceImpl implements DashBoardService {
         int consultant_total = 0;
         int supervisor_total = 0;
 
-        List<Object> login_users = redisUtils.getList(RedisTable.loginUser);
+        Set<Object> login_users = redisUtils.getSetMembers(RedisTable.loginUser);
+        login_users.remove("-1");
+
         for (Object user : login_users) {
+            System.out.println(user);
             User u = userdao.findByUserName((String) user);
             switch (u.getUserClass()) {
                 case Normal:
