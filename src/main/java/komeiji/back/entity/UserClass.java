@@ -1,5 +1,8 @@
 package komeiji.back.entity;
 
+import lombok.Getter;
+
+@Getter
 public enum UserClass {
     Normal(0),
     Assistant(1),
@@ -21,7 +24,4 @@ public enum UserClass {
         throw new IllegalArgumentException("Invalid code: " + code);
     }
 
-    public int getCode() {
-        return code;
-    }
 }

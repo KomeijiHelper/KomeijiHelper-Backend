@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -46,8 +45,6 @@ public class UserController {
 
     @Resource
     MailService mailService;
-
-    public static HashMap<String,HttpSession> sessions = new HashMap<>();
 
     @PostMapping("/login")
     @Operation(summary = "用户登录", description = "接受post请求体body中包含用户名和密码，返回登录成功的用户名")
@@ -129,10 +126,9 @@ public class UserController {
         Object obj = Map.of("a",a,"b",b);
         redisUtils.addHash("cjw","jjj",obj);
 
-       Object result =redisUtils.getHash("cjw","jjj");
+        Object result =redisUtils.getHash("cjw","jjj");
 
         System.out.println(result);
-        Map<String,Object> map = (Map<String, Object>) result;
 
         return result.toString();
 

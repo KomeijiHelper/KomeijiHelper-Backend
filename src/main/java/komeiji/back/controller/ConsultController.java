@@ -8,7 +8,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import komeiji.back.entity.enum_entity.ConsultRequestStatus;
 import komeiji.back.service.ConsultService;
-import komeiji.back.utils.RedisUtils;
 import komeiji.back.utils.Result;
 import komeiji.back.websocket.message.Message;
 import komeiji.back.websocket.message.MessageFactory;
@@ -38,11 +37,7 @@ public class ConsultController {
     private volatile ConcurrentHashMap<String, ConsultRequestStatus> requestStatus_map = new ConcurrentHashMap<>();
 
     @Resource
-    private ConsultService consult_Service_service;
-    @Resource
     private ConsultService consultService;
-    @Resource
-    RedisUtils redisUtils;
 
     private static final Gson gson = new Gson();
 

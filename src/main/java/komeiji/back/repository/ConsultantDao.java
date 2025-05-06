@@ -18,12 +18,12 @@ public interface ConsultantDao extends JpaRepository<Consultant, Integer> {
     @Modifying
     @Transactional
     @Query("update Consultant c set c.totalRecord = c.totalRecord + 1 where c.consultantId =?1")
-    int addOneTotalRecord(@Param("1") Long consultantId);
+    void addOneTotalRecord(@Param("1") Long consultantId);
 
     //DONE 为scoreRecord自增1 并更新avgScore
     @Modifying
     @Transactional
     @Query("update Consultant c set c.scoreRecord = c.scoreRecord + 1,c.avgScore = ?2 where c.consultantId =?1")
-    int updateAvgScore(@Param("1") Long consultantId, @Param("2") float score);
+    void updateAvgScore(@Param("1") Long consultantId, @Param("2") float score);
 
 }
