@@ -8,6 +8,5 @@ public interface DashBoardService {
     int getOneDayTotalRecord(User user , String date);
     int getPeriodTotalRecord(User user, String startDate, String endDate);
     Map<String,Integer> getUserCount();
-    Map<String,Long> getOnlineUserCount();
     Map<String,Integer> getLoginUserCount();
 }

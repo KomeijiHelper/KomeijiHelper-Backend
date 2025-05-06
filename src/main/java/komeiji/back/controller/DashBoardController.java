@@ -40,7 +40,6 @@ public class DashBoardController {
 
         List<Integer> chatRecordCountList = new ArrayList<>();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        // fix bug
         for (int i = 6; i >= 0; i--) {
             LocalDate date = LocalDate.now().minusDays(i);
             String dateStr = date.format(formatter);

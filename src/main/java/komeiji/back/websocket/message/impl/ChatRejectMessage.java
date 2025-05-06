@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import komeiji.back.websocket.message.Message;
 import komeiji.back.websocket.session.SessionToken;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 

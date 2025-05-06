@@ -16,7 +16,6 @@ import komeiji.back.websocket.message.MessageType;
 import komeiji.back.websocket.session.SessionToken;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.*;
 
@@ -60,15 +59,11 @@ public class ConsultController {
     /**
      *
      * 用户调用connect_request接口，传入请求咨询师的id
-     *
      * 获取对应咨询师的channel
-     *
      * 向咨询师发送对应消息
-     *
      * 等待咨询师回复 咨询师调用响应API接触用户线程的阻塞
      *      1.如果用户线程阻塞以及被remove 说明用户已取消预约，此时提醒咨询师
      *      2.如果用户线程阻塞未被remove，则等待用户回复，回复后更新数据库，并向用户发送回复消息
-     *
      * 如果咨询师同意，则向双方channel发送可以进行连接的消息
      **/
 
@@ -88,7 +83,6 @@ public class ConsultController {
         waiters.put(Login_user, new CountDownLatch(1));
         invite_map.put(Login_user, consult_id);
         requestStatus_map.put(Login_user, ConsultRequestStatus.WAITING);
-//        System.out.println("after put waters:"+waiters);
 
         //TODO SessionToken的创建 需要进行修改 根据具体方法
         SessionToken patient_sessiontoken = new SessionToken(Login_user);
@@ -162,10 +156,6 @@ public class ConsultController {
     @PostMapping("/response_request")
     public Result<String> responseRequest(@RequestBody ChatResponse chatResponse, HttpSession session, HttpServletResponse response) throws IOException, InterruptedException
     {
-//        System.out.println("patient_id:"+patient_id);
-//        System.out.println("waiter.size():"+waiters.size());
-//        System.out.println("waiters:"+waiters);
-
         System.out.println("收到回应" + chatResponse.accept);
         Optional<CountDownLatch> latch = Optional.ofNullable(waiters.get(chatResponse.patientId));
         if(latch.isPresent() && requestStatus_map.get(chatResponse.patientId).equals(ConsultRequestStatus.WAITING)){
