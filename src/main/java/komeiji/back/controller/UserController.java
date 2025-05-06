@@ -113,10 +113,10 @@ public class UserController {
             }
     )
     public Result<String> registerController(@RequestBody User newUser, HttpSession session, HttpServletResponse response) throws IOException, NoSuchAlgorithmException {
-        if(!userService.userNameIsLegal(newUser.getUserName())){
-            System.out.println("注册用户名:"+newUser.getUserName());
-            return Result.error(457,"用户名不合法",response);
-        }
+//        if(!userService.userNameIsLegal(newUser.getUserName())){
+//            System.out.println("注册用户名:"+newUser.getUserName());
+//            return Result.error(457,"用户名不合法",response);
+//        }
         if(!newUser.getQualification().isEmpty()){
             if(userdao.findByQualification(newUser.getQualification()) != null){
                 return Result.error(460,"资质证书重复",response);

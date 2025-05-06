@@ -36,10 +36,10 @@ spring:
       host: 127.0.0.1
       port: 6379
   mail:
-    host: smtp.gmail.com
+    host: smtp.qq.com
     port: 587
-    username: komeiji.cyou@gmail.com # using google's mail as our official mail
-    password: jmjccsiynvxbpehx
+    username: junqiaochen@qq.com
+    password: bzucocddxitqbahg
     protocol: smtp
     default-encoding: UTF-8
     properties:
