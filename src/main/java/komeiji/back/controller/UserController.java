@@ -4,29 +4,6 @@ import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import io.swagger.v3.oas.annotations.Hidden;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import komeiji.back.entity.UserClass;
-import komeiji.back.repository.UserDao;
-import komeiji.back.service.EmailCodeStatus;
-import komeiji.back.service.MailService;
-import komeiji.back.service.UserService;
-import komeiji.back.entity.User;
-import komeiji.back.utils.*;
-import lombok.Getter;
-import lombok.Setter;
-import org.json.JSONObject;
-import org.springframework.web.bind.annotation.*;
-import jakarta.annotation.Resource;
-
-import java.io.*;
-import java.security.NoSuchAlgorithmException;
-import java.util.*;
-import java.util.stream.Collectors;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -50,7 +27,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -69,8 +45,6 @@ public class UserController {
 
     @Resource
     MailService mailService;
-
-    public static HashMap<String,HttpSession> sessions = new HashMap<>();
 
     @PostMapping("/login")
     @Operation(summary = "用户登录", description = "接受post请求体body中包含用户名和密码，返回登录成功的用户名")
@@ -152,10 +126,9 @@ public class UserController {
         Object obj = Map.of("a",a,"b",b);
         redisUtils.addHash("cjw","jjj",obj);
 
-       Object result =redisUtils.getHash("cjw","jjj");
+        Object result =redisUtils.getHash("cjw","jjj");
 
         System.out.println(result);
-        Map<String,Object> map = (Map<String, Object>) result;
 
         return result.toString();
 

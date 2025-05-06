@@ -63,14 +63,6 @@ public class DashBoardServiceImpl implements DashBoardService {
     }
 
     @Override
-    public Map<String, Long> getOnlineUserCount() {
-        Long normal_total = redisUtils.getHashSize(RedisTable.onlineNormal) - 1;
-        Long consultant_total = redisUtils.getHashSize(RedisTable.onlineConsultant) - 1;
-        Long supervisor_total = redisUtils.getHashSize(RedisTable.onlineSupervisor) - 1;
-        return Map.of("Normal", normal_total, "Assistant", consultant_total, "Supervisor", supervisor_total);
-    }
-
-    @Override
     public Map<String, Integer> getLoginUserCount() {
         int normal_total = 0;
         int consultant_total = 0;

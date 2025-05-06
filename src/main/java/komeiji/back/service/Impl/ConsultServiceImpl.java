@@ -81,11 +81,6 @@ public class ConsultServiceImpl implements ConsultService {
     }
 
     @Override
-    public void rejectRequest_Service(SessionToken patient_sessiontoken) {
-//        Message reject_patient = MessageFactory.newTextMessage(MessageType.)
-    }
-
-    @Override
     public boolean checkBusy(String consultant) {
         Set<Object> busy = redisUtils.getHashKeys(RedisTable.UserToSession);
         return !busy.contains(consultant);
