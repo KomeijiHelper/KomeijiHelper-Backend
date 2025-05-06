@@ -61,9 +61,9 @@ public class UserController {
         User loginResult = userService.loginService(loginUser.getUserName(), loginUser.getPassword());
 
         if(loginResult!= null){
-            if(redisUtils.isMember(RedisTable.loginUser, loginUser.getUserName())){
-                return Result.error(409,"该用户已登录",response);
-            }
+//            if(redisUtils.isMember(RedisTable.loginUser, loginUser.getUserName())){
+//                return Result.error(409,"该用户已登录",response);
+//            }
             session.setAttribute("LoginUser", loginUser.getUserName());
             session.setAttribute("Id", loginResult.getId());
 
