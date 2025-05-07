@@ -11,14 +11,19 @@ import komeiji.back.websocket.session.SessionManager;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.env.Environment;
+import org.springframework.data.redis.core.RedisTemplate;
 @SpringBootApplication
 public class BackApplication {
 
-    @Value("${useSsl}")
-    private static boolean ssl;
 
     public static void main(String[] args) {
-        SpringApplication.run(BackApplication.class, args);
+        ConfigurableApplicationContext context = SpringApplication.run(BackApplication.class, args);
+
+        Environment env = context.getEnvironment();
+        boolean ssl = Boolean.parseBoolean(env.getProperty("useSsl"));
+        System.out.println(ssl);
         InitUtils.init();
         WebSocketServer webSocketServer = WebSocketServer.getWebSocketSingleServer(ssl,LogLevel.INFO,1048576*16,"/ws",
                 new SessionManager(new DefaultChannelGroup(GlobalEventExecutor.INSTANCE)),
