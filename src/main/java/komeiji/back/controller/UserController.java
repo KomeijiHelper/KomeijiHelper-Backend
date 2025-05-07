@@ -230,7 +230,7 @@ public class UserController {
     }
 
     @PostMapping("/resetPassword")
-    @Operation(summary = "根据传入的User数据修改用户信息", description = "根据传入的User数据修改用户信息,manager权限可以任意修改，其他用户只能修改自己的信息")
+    @Operation(summary = "重置密码", description = "重置为随机密码")
     public Result<String> resetPassword(@RequestBody int userId, HttpSession session) throws NoSuchAlgorithmException {
         User loginUser = userService.getUserById((long) session.getAttribute("Id"));
         User wantedUser = userService.getUserById(userId);
@@ -247,7 +247,7 @@ public class UserController {
     }
 
     @PostMapping("/changePassword")
-    @Operation(summary = "根据传入的User数据修改用户信息", description = "根据传入的User数据修改用户信息,manager权限可以任意修改，其他用户只能修改自己的信息")
+    @Operation(summary = "更改密码", description = "先校验旧密码MD5，通过后更改为新密码的MD5")
     public Result<String> changePassword(@RequestBody ChangePasswordRequest request, HttpSession session) throws NoSuchAlgorithmException {
         User loginUser = userService.getUserById((long) session.getAttribute("Id"));
         String oldMD5 = MD5Utils.toMD5(request.getOldPassword());
@@ -274,10 +274,11 @@ public class UserController {
 
     @Setter
     @Getter
-    @Schema(description = "用户类别请求参数")
+    @Schema(description = "更改密码请求参数")
     public static class ChangePasswordRequest {
-        @Schema(description = "用户类别代码", example = "Normal")
+        @Schema(description = "旧密码")
         private String oldPassword;
+        @Schema(description = "新密码")
         private String newPassword;
     }
 
