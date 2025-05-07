@@ -61,9 +61,6 @@ public class UserController {
         User loginResult = userService.loginService(loginUser.getUserName(), loginUser.getPassword());
 
         if(loginResult!= null){
-//            if(redisUtils.isMember(RedisTable.loginUser, loginUser.getUserName())){
-//                return Result.error(409,"该用户已登录",response);
-//            }
             session.setAttribute("LoginUser", loginUser.getUserName());
             session.setAttribute("Id", loginResult.getId());
 
@@ -87,10 +84,6 @@ public class UserController {
             }
     )
     public Result<String> registerController(@RequestBody User newUser, HttpSession session, HttpServletResponse response) throws IOException, NoSuchAlgorithmException {
-//        if(!userService.userNameIsLegal(newUser.getUserName())){
-//            System.out.println("注册用户名:"+newUser.getUserName());
-//            return Result.error(457,"用户名不合法",response);
-//        }
         if(!newUser.getQualification().isEmpty()){
             if(userdao.findByQualification(newUser.getQualification()) != null){
                 return Result.error(460,"资质证书重复",response);
